@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Colors */
+  --color-brand-base: rgb(13 13 15);
+  --color-brand-surface: rgb(245 239 235);
+  --color-brand-muted: rgb(158 152 143);
+  --color-brand-accent: rgb(229 169 60);
+
+  /* Typography linked to Next.js fonts */
+  --font-heading: var(--font-bodoni), serif;
+  --font-body: var(--font-manrope), sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Global layout & utility inject */
+@layer base {
+  body {
+    background-color: var(--color-brand-base);
+    color: var(--color-brand-surface);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  ::selection {
+    background-color: var(--color-brand-accent);
+    color: var(--color-brand-base);
+  }
+
+  /* Accessibility floor: users who've asked for reduced motion still get
+     the smooth-scroll library disabled (see SmoothScroll.tsx) and GSAP's
+     scroll-scrub skipped — this catches anything left running on native
+     CSS transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Lenis smooth scroll boilerplate */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
