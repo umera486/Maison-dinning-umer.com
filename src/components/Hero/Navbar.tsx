@@ -1,30 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import ReservationModal from "./ReservationModal";
 
 export default function Navbar() {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (menuOpen || orderModalOpen) return;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY, menuOpen, orderModalOpen]);
 
   const menuVariants: Variants = {
     hidden: { opacity: 0, y: "-100%" },
@@ -59,39 +41,37 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Compact, Non-Collapsing Fixed Header */}
       <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ 
-          y: isVisible ? 0 : -100, 
-          opacity: isVisible ? 1 : 0 
-        }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
-        className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 md:px-16 py-5 backdrop-blur-md bg-[#0D0D0F]/70 border-b border-[#F5EFEB]/10"
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-5 sm:px-8 md:px-16 py-3.5 sm:py-4 backdrop-blur-xl bg-[#0D0D0F]/80 border-b border-[#F5EFEB]/10 transform-gpu"
       >
-        <div className="flex items-center gap-6">
-          <a href="#" className="font-heading text-2xl md:text-3xl tracking-wider text-[#F5EFEB]">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <a href="#" className="font-heading text-xl sm:text-2xl tracking-wider text-[#F5EFEB]">
             MAISON
           </a>
           
           <button
             onClick={() => setOrderModalOpen(true)}
-            className="relative group px-6 py-2.5 overflow-hidden rounded-full bg-[#E5A93C]/10 border border-[#E5A93C] text-[#E5A93C] font-body text-xs uppercase tracking-[0.2em] transition-all duration-500 hover:bg-[#E5A93C] hover:text-[#0D0D0F] shadow-[0_0_20px_rgba(229,169,60,0.15)] hover:shadow-[0_0_25px_rgba(229,169,60,0.4)] cursor-pointer"
+            className="relative group px-4 sm:px-5 py-2 overflow-hidden rounded-full bg-[#E5A93C]/10 border border-[#E5A93C] text-[#E5A93C] font-body text-[10px] sm:text-xs uppercase tracking-[0.2em] transition-all duration-500 hover:bg-[#E5A93C] hover:text-[#0D0D0F] shadow-[0_0_15px_rgba(229,169,60,0.15)] cursor-pointer"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-[#E5A93C]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
-            <span className="relative z-10 font-medium">Order Now</span>
+            <span className="relative z-10 font-medium">Reserve</span>
           </button>
         </div>
 
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-3 text-[#F5EFEB] font-body text-xs uppercase tracking-[0.2em] group py-2 px-3 rounded-full hover:bg-[#F5EFEB]/5 transition-colors cursor-pointer"
+            className="flex items-center gap-2.5 text-[#F5EFEB] font-body text-[10px] sm:text-xs uppercase tracking-[0.2em] group py-1.5 px-2.5 rounded-full hover:bg-[#F5EFEB]/5 transition-colors cursor-pointer"
           >
-            <span className="hidden md:inline-block text-[#9E988F] group-hover:text-[#F5EFEB] transition-colors">
+            <span className="text-[#9E988F] group-hover:text-[#F5EFEB] transition-colors">
               {menuOpen ? "Close" : "Menu"}
             </span>
-            <div className="w-8 h-6 flex flex-col justify-between items-end">
-              <span className={`h-[1.5px] w-full bg-[#F5EFEB] transition-transform duration-300 ${menuOpen ? "rotate-45 translate-y-2.5" : ""}`} />
+            <div className="w-7 h-5 flex flex-col justify-between items-end">
+              <span className={`h-[1.5px] w-full bg-[#F5EFEB] transition-transform duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
               <span className={`h-[1.5px] w-3/4 bg-[#E5A93C] transition-opacity duration-300 ${menuOpen ? "opacity-0" : "opacity-100"}`} />
               <span className={`h-[1.5px] w-full bg-[#F5EFEB] transition-transform duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
             </div>
@@ -99,6 +79,7 @@ export default function Navbar() {
         </div>
       </motion.header>
 
+      {/* Fullscreen Navigation Overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -106,7 +87,7 @@ export default function Navbar() {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 z-50 bg-[#0D0D0F] flex flex-col justify-between px-6 md:px-20 py-10 overflow-hidden"
+            className="fixed inset-0 z-[110] bg-[#0D0D0F] flex flex-col justify-between px-6 md:px-20 py-10 overflow-hidden"
           >
             <div className="flex items-center justify-between border-b border-[#F5EFEB]/10 pb-6">
               <span className="font-heading text-2xl tracking-wider text-[#F5EFEB]">MAISON DINING</span>
