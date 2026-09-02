@@ -1,3 +1,4 @@
+// app/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -7,7 +8,6 @@ import HeroText from "@/components/Hero/HeroText";
 import HeroVisual from "@/components/Hero/HeroVisual";
 import StackSection from "@/components/layout/StackSection";
 
-// Naye generated components imports
 import CulinaryPillars from "@/components/sections/CulinaryPillars";
 import Gallery from "@/components/sections/Gallery";
 import Press from "@/components/sections/Press";
@@ -22,31 +22,23 @@ export default function Home() {
 
       {isLoaded && (
         <>
-          {/* Navbar wrapper z-[100] lazmi dena taake stacking cards iske upar se na guzrein */}
           <div className="relative z-[100]">
             <Navbar />
           </div>
 
-          {/* TILE 0: Tumhara Original HeroText */}
-          <StackSection index={0} first>
+          <StackSection index={0}>
             <HeroText />
           </StackSection>
 
-          {/* TILE 1: Tumhara Original HeroVisual / Showcase */}
           <StackSection index={1}>
             <HeroVisual />
           </StackSection>
 
-          {/* TILES 2, 3, 4: Culinary Pillars (Internal loop takes 3 indices) */}
+          {/* Internal loop consumes indices 2, 3, 4 */}
           <CulinaryPillars startIndex={2} />
 
-          {/* TILE 5: The Gallery */}
           <Gallery index={5} />
-
-          {/* TILE 6: Press & Recognition */}
           <Press index={6} />
-
-          {/* TILE 7: Footer & Reservations */}
           <Footer index={7} />
         </>
       )}

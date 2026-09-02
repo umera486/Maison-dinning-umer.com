@@ -1,118 +1,152 @@
+// components/sections/Footer.tsx
 "use client";
 
-import { motion } from "framer-motion";
+import { useCallback } from "react";
 import StackSection from "@/components/layout/StackSection";
+import MagneticButton from "@/components/shared/MagneticButton";
 
-interface FooterProps {
-  index: number;
-  onOpenReservation?: () => void;
-}
+export default function Footer({ index }: { index: number }) {
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
-export default function Footer({ index, onOpenReservation }: FooterProps) {
   return (
-    <StackSection index={index} className="bg-[#08080A] text-[#F5EFEB] flex flex-col justify-between relative overflow-hidden select-none">
-      
-      {/* Background Architectural Grid Lines (Zero Cost) */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex justify-between px-6 sm:px-12 md:px-20 z-0">
-        <div className="w-px h-full bg-[#F5EFEB]" />
-        <div className="w-px h-full bg-[#F5EFEB] hidden md:block" />
-        <div className="w-px h-full bg-[#F5EFEB]" />
-      </div>
+    <StackSection 
+      index={index} 
+      className="bg-[#1A0B08] text-[#F5EFEB] flex flex-col justify-between overflow-y-auto relative selection:bg-[#E5A93C] selection:text-[#1A0B08]"
+    >
+      {/* Precision Matrix Table Grid Background */}
+      <div 
+        aria-hidden 
+        className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(229, 169, 60, 0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(229, 169, 60, 0.15) 1px, transparent 1px)
+          `,
+          backgroundSize: "36px 36px"
+        }}
+      />
 
-      {/* Top Editorial Status Bar */}
-      <div className="px-6 sm:px-12 md:px-20 pt-16 sm:pt-20 md:pt-24 z-10 flex items-center justify-between border-b border-[#F5EFEB]/10 pb-6">
-        <div className="flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full bg-[#E5A93C] shadow-[0_0_12px_rgba(229,169,60,0.8)] animate-pulse" />
-          <span className="font-body text-[0.6rem] sm:text-[0.65rem] uppercase tracking-[0.35em] text-[#9E988F]">
-            Sanctuary Status: Reservations Active
-          </span>
+      {/* Slim Integrated Marquee */}
+      <div className="relative z-10 w-full bg-[#E5A93C] text-[#1A0B08] py-2.5 overflow-hidden select-none border-y border-[#1A0B08]/20 shadow-md shrink-0">
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex items-center gap-8 mx-4 font-body text-[10px] sm:text-xs uppercase tracking-[0.25em] font-bold">
+              <span>✦ New Arrivals: Royal Lahori Nihari</span>
+              <span>•</span>
+              <span>Smoked Charcoal Lamb Chops</span>
+              <span>•</span>
+              <span>Artisanal Khoya Kheer</span>
+              <span>•</span>
+            </div>
+          ))}
         </div>
-        <span className="font-body text-[0.6rem] sm:text-[0.65rem] uppercase tracking-[0.35em] text-[#E5A93C] hidden sm:inline font-medium">
-          Paris — Lahore Node
-        </span>
       </div>
 
-      {/* Central Immersive Typography & Booking CTA */}
-      <div className="px-6 sm:px-12 md:px-20 my-auto py-10 sm:py-16 z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="w-6 h-[1px] bg-[#E5A93C]" />
-            <span className="font-body text-[0.6rem] sm:text-xs uppercase tracking-[0.3em] text-[#E5A93C]">
-              The Final Movement
-            </span>
-          </div>
-          <h2 className="font-heading font-light italic text-[clamp(3rem,10vw,9.5rem)] leading-[0.88] tracking-tight text-[#F5EFEB]">
-            Secure <br />
-            <span className="font-bold not-italic tracking-tighter text-[#E5A93C]">Your Table.</span>
-          </h2>
-        </div>
-
-        {/* 100% GPU-Optimized Interactive Button (Zero JS lag) */}
-        <button
-          onClick={() => onOpenReservation ? onOpenReservation() : alert("Opening Digital Concierge...")}
-          className="group relative px-8 sm:px-10 py-5 sm:py-6 rounded-full bg-[#E5A93C] text-[#08080A] font-body text-xs uppercase tracking-[0.3em] font-bold overflow-hidden shadow-[0_0_40px_rgba(229,169,60,0.25)] cursor-pointer shrink-0 transition-transform duration-500 hover:scale-[1.02] active:scale-[0.98] transform-gpu"
-        >
-          <span className="relative z-10 flex items-center gap-4">
-            Initialize Booking
-            <span className="transform group-hover:translate-x-1.5 transition-transform duration-300">→</span>
-          </span>
-          <div className="absolute inset-0 bg-white/25 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500 ease-out" />
-        </button>
-      </div>
-
-      {/* Swiss Architectural Information Matrix */}
-      <div className="px-6 sm:px-12 md:px-20 pb-12 pt-8 border-t border-[#F5EFEB]/10 z-10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 font-body text-xs">
+      {/* Main Content Container - Compact Spacing to Fit Viewport */}
+      <div className="relative z-10 px-4 sm:px-8 md:px-16 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6 my-auto max-w-5xl mx-auto w-full">
         
-        <div className="space-y-3">
-          <p className="text-[0.6rem] uppercase tracking-[0.3em] text-[#9E988F] font-bold">
-            Catalog Index
-          </p>
-          <ul className="space-y-2.5 text-[#F5EFEB]/80 font-light">
-            <li className="hover:text-[#E5A93C] cursor-pointer transition-colors">01 — The Tasting Menu</li>
-            <li className="hover:text-[#E5A93C] cursor-pointer transition-colors">02 — Reserve Cellar</li>
-            <li className="hover:text-[#E5A93C] cursor-pointer transition-colors">03 — Obsidian Salon</li>
-          </ul>
-        </div>
-
-        <div className="space-y-3">
-          <p className="text-[0.6rem] uppercase tracking-[0.3em] text-[#9E988F] font-bold">
-            Sanctuary Location
-          </p>
-          <ul className="space-y-2.5 text-[#F5EFEB]/80 font-light">
-            <li>Ghakhar Plaza, Suite 402</li>
-            <li className="text-[#E5A93C] font-medium">Paris / Lahore Node</li>
-            <li className="text-[#9E988F]">Tue — Sat (18:00 onwards)</li>
-          </ul>
-        </div>
-
-        <div className="space-y-3">
-          <p className="text-[0.6rem] uppercase tracking-[0.3em] text-[#9E988F] font-bold">
-            Direct Concierge
-          </p>
-          <p className="text-[#F5EFEB] font-medium hover:text-[#E5A93C] cursor-pointer transition-colors">
-            concierge@maisondining.com
-          </p>
-          <p className="text-[#9E988F] font-light">
-            +92 300 0000000
-          </p>
-        </div>
-
-        <div className="space-y-3 flex flex-col justify-between">
-          <div>
-            <p className="text-[0.6rem] uppercase tracking-[0.3em] text-[#9E988F] font-bold">
-              Governance
-            </p>
-            <span className="text-[#F5EFEB] font-medium block mt-1 tracking-wider">
-              © Maison Dining SAS
-            </span>
+        {/* Two Fused Square Blocks in a Single Row (Even on Mobile) */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 w-full border border-[#E5A93C]/40 bg-[#1A0B08]">
+          
+          {/* Block 1 */}
+          <div className="bg-[#24100C] p-4 sm:p-6 flex flex-col justify-between border-r border-[#E5A93C]/30 min-h-[160px] sm:min-h-[200px]">
+            <div>
+              <span className="font-body text-[8px] sm:text-[10px] uppercase tracking-[0.25em] text-[#E5A93C] block mb-1">
+                The Reserve
+              </span>
+              <h3 className="font-heading italic text-lg sm:text-2xl text-[#F5EFEB] font-light leading-tight">
+                Private Dining &amp; Darbar Hall
+              </h3>
+            </div>
+            <div className="pt-4">
+              <MagneticButton
+                onClick={() => alert("Opening reservation gateway...")}
+                className="px-4 py-2 rounded-none bg-[#E5A93C] text-[#1A0B08] font-body text-[10px] uppercase tracking-[0.2em] font-bold cursor-pointer"
+              >
+                Reserve
+              </MagneticButton>
+            </div>
           </div>
-          <span className="text-[#9E988F] text-[0.6rem] uppercase tracking-[0.2em] block">
-            Imprint · Privacy · Terms
-          </span>
+
+          {/* Block 2 */}
+          <div className="bg-[#1F0D0A] p-4 sm:p-6 flex flex-col justify-between min-h-[160px] sm:min-h-[200px]">
+            <div>
+              <span className="font-body text-[8px] sm:text-[10px] uppercase tracking-[0.25em] text-[#E5A93C] block mb-1">
+                Authenticity
+              </span>
+              <h3 className="font-heading italic text-lg sm:text-2xl text-[#F5EFEB] font-light leading-tight">
+                100% Halal Certified Punjab Spices
+              </h3>
+            </div>
+            <div className="pt-4">
+              <a 
+                href="#menu" 
+                className="inline-flex items-center gap-1.5 font-heading italic text-xs sm:text-sm text-[#E5A93C] hover:text-[#F5EFEB] transition-colors"
+              >
+                <span>View Menu</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Single Horizontal Block for Links, Info & Return Button */}
+        <div className="w-full bg-[#1F0D0A]/95 backdrop-blur-md border border-[#E5A93C]/40 p-4 sm:p-6 flex flex-col gap-4 shadow-xl">
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-body text-[11px] sm:text-xs">
+            <div className="space-y-1.5">
+              <p className="text-[9px] uppercase tracking-[0.25em] text-[#E5A93C] font-bold">Navigation</p>
+              <ul className="space-y-1 text-[#9E988F]">
+                <li><a href="#shahi-reserve" className="hover:text-[#F5EFEB] transition-colors">The Reserve</a></li>
+                <li><a href="#heritage" className="hover:text-[#F5EFEB] transition-colors">Heritage</a></li>
+                <li><a href="#concierge" className="hover:text-[#F5EFEB] transition-colors">Concierge</a></li>
+              </ul>
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[9px] uppercase tracking-[0.25em] text-[#E5A93C] font-bold">Location</p>
+              <p className="text-[#F5EFEB]">142 Green Street</p>
+              <p className="text-[#9E988F]">London E7 8JQ</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[9px] uppercase tracking-[0.25em] text-[#E5A93C] font-bold">Contact</p>
+              <p><a href="mailto:concierge@lahoriwala.co.uk" className="text-[#9E988F] hover:text-[#F5EFEB]">Concierge Email</a></p>
+              <p className="text-[#F5EFEB]">+44 20 7946 0000</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[9px] uppercase tracking-[0.25em] text-[#E5A93C] font-bold">Social &amp; Legal</p>
+              <ul className="space-y-1 text-[#9E988F]">
+                <li><a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-[#F5EFEB]">Instagram</a></li>
+                <li><a href="#privacy" className="hover:text-[#F5EFEB]">Privacy Policy</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Compact Return-to-Top Button */}
+          <div className="pt-3 border-t border-[#F5EFEB]/10 flex justify-center">
+            <button
+              onClick={scrollToTop}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-none border border-[#E5A93C] bg-[#24100C] text-[#F5EFEB] font-body text-[10px] uppercase tracking-[0.25em] flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:bg-[#E5A93C] hover:text-[#1A0B08]"
+            >
+              <span>Return to Top</span>
+              <span className="text-sm">↑</span>
+            </button>
+          </div>
+
         </div>
 
       </div>
 
+      {/* Minimal Footer Bottom Bar */}
+      <div className="relative z-10 px-4 sm:px-8 md:px-16 py-3 border-t border-[#E5A93C]/30 flex flex-col sm:flex-row items-center justify-between gap-2 font-body text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-[#9E988F] shrink-0 bg-[#1A0B08]">
+        <span>© {new Date().getFullYear()} Lahori Wala Ltd. All Rights Reserved.</span>
+        <span className="font-heading italic text-[#E5A93C]">Lahori Wala.</span>
+      </div>
     </StackSection>
   );
 }

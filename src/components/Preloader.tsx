@@ -1,5 +1,7 @@
+// components/Preloader.tsx
 "use client";
 import { motion, Variants, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface PreloaderProps {
@@ -10,14 +12,14 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
-  const word1 = "MAISON".split("");
-  const word2 = "DINING".split("");
+  const word1 = "LAHORI".split("");
+  const word2 = "WALA".split("");
 
   const loadingPhrases = [
-    "Curating Culinary Excellence...",
-    "Sourcing Rare Ingredients...",
-    "Crafting the Ambiance...",
-    "Preparing Your Experience..."
+    "Sourcing Authentic Spices...",
+    "Curating the Heritage...",
+    "Firing the Tandoor...",
+    "Preparing Your Experience...",
   ];
 
   useEffect(() => {
@@ -30,45 +32,22 @@ export default function Preloader({ onComplete }: PreloaderProps) {
 
   const containerVariants: Variants = {
     hidden: { opacity: 1, y: 0 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { staggerChildren: 0.08, delayChildren: 0.2 },
-    },
-    exit: {
-      opacity: 0,
-      y: "-100vh",
-      transition: { 
-        duration: 0.9, 
-        ease: [0.77, 0, 0.175, 1] 
-      },
-    },
+    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+    exit: { opacity: 0, y: "-100vh", transition: { duration: 0.9, ease: [0.77, 0, 0.175, 1] } },
   };
 
   const letterVariants: Variants = {
     hidden: { y: "150%", opacity: 0, rotate: 15 },
-    visible: {
-      y: "0%",
-      opacity: 1,
-      rotate: 0,
-      transition: { duration: 0.8, ease: [0.6, 0.01, -0.05, 0.95] },
-    },
+    visible: { y: "0%", opacity: 1, rotate: 0, transition: { duration: 0.8, ease: [0.6, 0.01, -0.05, 0.95] } },
   };
 
   const iconVariants: Variants = {
     hidden: { opacity: 0, scale: 0, rotate: -180 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: { duration: 1, ease: "backOut", delay: 0.7 },
-    },
+    visible: { opacity: 1, scale: 1, rotate: 0, transition: { duration: 1, ease: "backOut", delay: 0.7 } },
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3200);
+    const timer = setTimeout(() => setIsLoading(false), 3200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -83,22 +62,23 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           style={{ willChange: "transform, opacity" }}
           className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#0D0D0F] bg-[radial-gradient(ellipse_at_bottom_left,_rgba(229,169,60,0.08)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_right,_rgba(229,169,60,0.08)_0%,_transparent_50%)] px-4 overflow-hidden"
         >
-          {/* Faded Background Luxury Image */}
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <img 
-              src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2000&auto=format&fit=crop" 
-              alt="Restaurant Interior Ambiance"
-              className="w-full h-full object-cover opacity-15 filter blur-[4px] scale-105"
+            <Image
+              src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1600&auto=format&fit=crop"
+              alt="Tandoor Ambiance"
+              fill
+              sizes="100vw"
+              priority
+              quality={60}
+              className="object-cover opacity-15 blur-[4px] scale-105"
             />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(13,13,15,0.6)_0%,_rgba(13,13,15,0.92)_100%)]" />
           </div>
 
-          {/* Fully Responsive Main Typography & Cloche Icon */}
-          <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-6 text-[#F5EFEB] font-heading text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-wider sm:tracking-widest text-center">
-            
+          <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-6 text-[#F5EFEB] font-heading font-bold text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-wider sm:tracking-widest text-center">
             <div className="flex overflow-hidden pb-2 sm:pb-4">
-              {word1.map((char, index) => (
-                <motion.span key={`w1-${index}`} variants={letterVariants} className="inline-block">
+              {word1.map((char, i) => (
+                <motion.span key={`w1-${i}`} variants={letterVariants} className="inline-block">
                   {char}
                 </motion.span>
               ))}
@@ -114,16 +94,14 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             </motion.div>
 
             <div className="flex overflow-hidden pb-2 sm:pb-4">
-              {word2.map((char, index) => (
-                <motion.span key={`w2-${index}`} variants={letterVariants} className="inline-block">
+              {word2.map((char, i) => (
+                <motion.span key={`w2-${i}`} variants={letterVariants} className="inline-block">
                   {char}
                 </motion.span>
               ))}
             </div>
-
           </div>
 
-          {/* Rotating Sub-Headlines */}
           <div className="absolute bottom-12 sm:bottom-16 z-10 h-6 overflow-hidden text-center px-4">
             <AnimatePresence mode="wait">
               <motion.p
@@ -138,7 +116,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
               </motion.p>
             </AnimatePresence>
           </div>
-
         </motion.div>
       )}
     </AnimatePresence>
