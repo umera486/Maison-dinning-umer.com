@@ -1,28 +1,30 @@
-// components/Hero/Navbar.tsx
+// src/components/Hero/Navbar.tsx
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useMotionValue, useSpring, type Variants } from "framer-motion";
 import ReservationModal from "./ReservationModal";
 
+// Dynamic routing mapped to our dedicated pages
 const navLinks = [
-  { title: "The Shahi Reserve", href: "#shahi-reserve" },
-  { title: "Culinary Heritage", href: "#heritage" },
-  { title: "Private Dastarkhwan", href: "#dastarkhwan" },
-  { title: "Concierge", href: "#concierge" },
+  { title: "The Reserve", href: "/shahi-reserve" },
+  { title: "Our Story", href: "/heritage" },
+  { title: "Private Dining", href: "/private-dining" },
+  { title: "Book & Contact", href: "/contact" },
 ];
 
 const LINK_SPRING = { stiffness: 160, damping: 14, mass: 0.4 };
 
 function MagneticLink({ href, children }: { href: string; children: ReactNode }) {
-  const ref = useRef<HTMLAnchorElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const x = useSpring(rawX, LINK_SPRING);
   const y = useSpring(rawY, LINK_SPRING);
 
   const handleMove = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       if (!ref.current) return;
       const rect = ref.current.getBoundingClientRect();
       rawX.set((e.clientX - rect.left - rect.width / 2) * 0.25);
@@ -36,33 +38,36 @@ function MagneticLink({ href, children }: { href: string; children: ReactNode })
   }, [rawX, rawY]);
 
   return (
-    <motion.a
+    <motion.div
       ref={ref}
-      href={href}
       onMouseMove={handleMove}
       onMouseLeave={reset}
       style={{ x, y, willChange: "transform" }}
       className="group relative inline-block"
     >
-      <span aria-hidden className="invisible block font-heading italic text-sm py-1">{children}</span>
-      <span
-        className="absolute inset-0 flex items-center font-body text-[10px] uppercase tracking-[0.2em] text-white
-          opacity-100 scale-100 transition-[opacity,transform] duration-400 ease-[cubic-bezier(0.76,0,0.24,1)]
-          group-hover:opacity-0 group-hover:scale-95 transform-gpu"
-        style={{ willChange: "opacity, transform" }}
-      >
-        {children}
-      </span>
-      <span
-        aria-hidden
-        className="absolute inset-0 flex items-center font-heading italic text-sm text-[#E5A93C]
-          opacity-0 scale-95 transition-[opacity,transform] duration-400 ease-[cubic-bezier(0.76,0,0.24,1)]
-          group-hover:opacity-100 group-hover:scale-105 transform-gpu"
-        style={{ willChange: "opacity, transform" }}
-      >
-        {children}
-      </span>
-    </motion.a>
+      <Link href={href} className="relative inline-block py-1">
+        <span aria-hidden className="invisible block font-heading italic text-sm">
+          {children}
+        </span>
+        <span
+          className="absolute inset-0 flex items-center font-body text-[10px] uppercase tracking-[0.2em] text-white
+            opacity-100 scale-100 transition-[opacity,transform] duration-400 ease-[cubic-bezier(0.76,0,0.24,1)]
+            group-hover:opacity-0 group-hover:scale-95 transform-gpu"
+          style={{ willChange: "opacity, transform" }}
+        >
+          {children}
+        </span>
+        <span
+          aria-hidden
+          className="absolute inset-0 flex items-center font-heading italic text-sm text-[#E5A93C]
+            opacity-0 scale-95 transition-[opacity,transform] duration-400 ease-[cubic-bezier(0.76,0,0.24,1)]
+            group-hover:opacity-100 group-hover:scale-105 transform-gpu"
+          style={{ willChange: "opacity, transform" }}
+        >
+          {children}
+        </span>
+      </Link>
+    </motion.div>
   );
 }
 
@@ -96,7 +101,17 @@ function SealButton({
         <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.5" />
         <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" strokeWidth="0.6" opacity="0.3" strokeDasharray="2 3" />
         <line x1="16" y1="24" x2="32" y2="24" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        <line x1="24" y1="16" x2="24" y2="32" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity={open ? 0 : 1} className="transition-opacity duration-300" />
+        <line
+          x1="24"
+          y1="16"
+          x2="24"
+          y2="32"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          opacity={open ? 0 : 1}
+          className="transition-opacity duration-300"
+        />
       </motion.svg>
     </button>
   );
@@ -131,15 +146,11 @@ export default function Navbar() {
   const lastScrollY = useRef(0);
   const sealRef = useRef<HTMLButtonElement | null>(null);
 
-  // Optimized Scroll Direction & Solid Background Tracker
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      // Toggle hard background trigger after 50px of scrolling
       setIsScrolled(currentScrollY > 50);
 
-      // Hide navbar on scroll down, show immediately on scroll up
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         setVisible(false);
       } else {
@@ -190,7 +201,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Scroll-clash blur mask */}
       <div
         aria-hidden
         className="fixed top-0 left-0 right-0 z-[90] h-32 sm:h-36 pointer-events-none"
@@ -212,9 +222,9 @@ export default function Navbar() {
           }`}
         style={{ mixBlendMode: isScrolled ? "normal" : "difference" }}
       >
-        <a href="#" className="font-heading text-lg sm:text-xl tracking-[0.15em] text-white">
+        <Link href="/" className="font-heading text-lg sm:text-xl tracking-[0.15em] text-white">
           LAHORI WALA
-        </a>
+        </Link>
 
         <nav className="hidden md:flex items-center gap-10">
           {navLinks.map((link) => (
@@ -284,7 +294,6 @@ export default function Navbar() {
                 <SealButton open={menuOpen} onClick={closeMenu} registerRef={() => {}} label="Close menu" />
               </motion.div>
 
-              {/* Refined Responsive Navigation Links Container */}
               <motion.nav
                 variants={listVariants}
                 initial="hidden"
@@ -293,19 +302,20 @@ export default function Navbar() {
               >
                 {navLinks.map((link, i) => (
                   <div key={link.href} className="overflow-hidden w-full group/item">
-                    <motion.a
-                      variants={linkVariants}
-                      href={link.href}
-                      onClick={closeMenu}
-                      className="flex items-center gap-4 sm:gap-6 font-heading text-3xl sm:text-5xl md:text-7xl text-[#F5EFEB] hover:text-[#E5A93C] transition-colors duration-300 italic font-light transform-gpu py-1 cursor-pointer"
-                    >
-                      <span className="font-body not-italic text-xs sm:text-sm text-[#E5A93C]/70 tracking-widest group-hover/item:text-[#E5A93C] transition-colors">
-                        0{i + 1}
-                      </span>
-                      <span className="relative inline-block group-hover/item:translate-x-2 transition-transform duration-500">
-                        {link.title}
-                      </span>
-                    </motion.a>
+                    <motion.div variants={linkVariants}>
+                      <Link
+                        href={link.href}
+                        onClick={closeMenu}
+                        className="flex items-center gap-4 sm:gap-6 font-heading text-3xl sm:text-5xl md:text-7xl text-[#F5EFEB] hover:text-[#E5A93C] transition-colors duration-300 italic font-light transform-gpu py-1 cursor-pointer"
+                      >
+                        <span className="font-body not-italic text-xs sm:text-sm text-[#E5A93C]/70 tracking-widest group-hover/item:text-[#E5A93C] transition-colors">
+                          0{i + 1}
+                        </span>
+                        <span className="relative inline-block group-hover/item:translate-x-2 transition-transform duration-500">
+                          {link.title}
+                        </span>
+                      </Link>
+                    </motion.div>
                   </div>
                 ))}
               </motion.nav>
@@ -319,8 +329,12 @@ export default function Navbar() {
                 <p>Ghakhar Plaza, Suite 402 — London / Lahore</p>
                 <div className="flex gap-5 sm:gap-6">
                   <a href="#" className="hover:text-[#E5A93C] transition-colors">Instagram</a>
-                  <a href="#" className="hover:text-[#E5A93C] transition-colors">Reservations</a>
-                  <a href="#" className="hover:text-[#E5A93C] transition-colors">Press</a>
+                  <button onClick={() => { closeMenu(); setOrderModalOpen(true); }} className="hover:text-[#E5A93C] transition-colors uppercase cursor-pointer">
+                    Reservations
+                  </button>
+                  <Link href="/heritage" onClick={closeMenu} className="hover:text-[#E5A93C] transition-colors">
+                    Archive
+                  </Link>
                 </div>
               </motion.div>
             </div>
