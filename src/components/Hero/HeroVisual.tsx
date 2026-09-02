@@ -14,9 +14,6 @@ interface Experience {
   image: string;
 }
 
-// NOTE: Unsplash IDs below are placeholders pending real Lahori Wala
-// photography — verify each resolves before shipping (see next.config.ts
-// remotePatterns for images.unsplash.com).
 const experiences: Experience[] = [
   {
     id: "tandoor",
@@ -109,56 +106,56 @@ export default function HeroVisual() {
 
   return (
     <div className="relative h-full w-full bg-brand-base flex flex-col md:flex-row overflow-hidden">
-      <div className="relative z-10 w-full md:w-[42%] flex flex-col justify-center gap-1.5 sm:gap-2 px-5 sm:px-10 md:px-14 py-10 sm:py-16 md:py-0">
-        <span className="font-body text-[0.65rem] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-brand-accent mb-6 sm:mb-8 flex items-center gap-4">
-          <span className="w-8 h-[1px] bg-brand-accent/50 block" />
-          Three Pillars of Lahori Wala
-        </span>
-
-        {experiences.map((exp, idx) => {
-          const isActive = idx === activeIndex;
-          return (
-            <button
-              key={exp.id}
-              onClick={() => goTo(idx)}
-              disabled={isLocked && !isActive}
-              aria-current={isActive}
-              className="group relative w-full text-left py-3.5 sm:py-4 border-b border-brand-surface/10 last:border-b-0
-                cursor-pointer disabled:cursor-default touch-manipulation transition-all duration-300 overflow-hidden"
-            >
-              <motion.div
-                animate={{ scale: isActive ? 1 : 0.85, opacity: isActive ? 1 : 0.4 }}
-                whileHover={!isActive ? { x: 8, opacity: 0.7 } : {}}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                style={{ ...gpuLayer, transformOrigin: "left center" }}
-                className="flex items-baseline gap-3 sm:gap-4 relative z-10"
+      <div className="relative z-10 w-full md:w-[45%] flex flex-col justify-center gap-2 px-6 sm:px-12 md:px-16 py-12 md:py-0">
+        
+        {/* Navigation selection items with minimal, breathable spacing */}
+        <div className="flex flex-col gap-1 sm:gap-2 mb-6">
+          {experiences.map((exp, idx) => {
+            const isActive = idx === activeIndex;
+            return (
+              <button
+                key={exp.id}
+                onClick={() => goTo(idx)}
+                disabled={isLocked && !isActive}
+                aria-current={isActive}
+                className="group relative w-full text-left py-3 sm:py-3.5 border-b border-brand-surface/10 last:border-b-0
+                  cursor-pointer disabled:cursor-default touch-manipulation transition-all duration-300 overflow-hidden"
               >
-                <span className="font-body text-[0.7rem] sm:text-xs text-brand-muted tabular-nums shrink-0 font-medium">
-                  0{idx + 1}
-                </span>
-                <span
-                  className={`font-heading italic font-light leading-tight text-[clamp(1.5rem,5.5vw,3rem)] transition-colors duration-500 ${
-                    isActive ? "text-brand-accent" : "text-brand-surface"
-                  }`}
-                >
-                  {exp.title}
-                </span>
-              </motion.div>
-
-              {isActive && (
                 <motion.div
-                  layoutId="weight-underline"
-                  layout="position"
-                  className="absolute left-0 -bottom-px h-[2px] w-16 sm:w-24 bg-brand-accent z-20"
-                  style={gpuLayer}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-              )}
-            </button>
-          );
-        })}
+                  animate={{ scale: isActive ? 1 : 0.9, opacity: isActive ? 1 : 0.35 }}
+                  whileHover={!isActive ? { x: 6, opacity: 0.7 } : {}}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ ...gpuLayer, transformOrigin: "left center" }}
+                  className="flex items-baseline gap-4 relative z-10"
+                >
+                  <span className="font-body text-[0.65rem] sm:text-xs text-brand-muted tabular-nums shrink-0 font-medium">
+                    0{idx + 1}
+                  </span>
+                  <span
+                    className={`font-heading italic font-light leading-tight text-[clamp(1.65rem,4.5vw,2.75rem)] transition-colors duration-500 ${
+                      isActive ? "text-brand-accent" : "text-brand-surface"
+                    }`}
+                  >
+                    {exp.title}
+                  </span>
+                </motion.div>
 
-        <div className="min-h-[160px] sm:min-h-[140px] pt-8 sm:pt-10">
+                {isActive && (
+                  <motion.div
+                    layoutId="weight-underline"
+                    layout="position"
+                    className="absolute left-0 -bottom-px h-[2px] w-16 sm:w-24 bg-brand-accent z-20"
+                    style={gpuLayer}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Minimal content card section with refined typography */}
+        <div className="min-h-[150px] sm:min-h-[130px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={current.id}
@@ -167,19 +164,20 @@ export default function HeroVisual() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               style={gpuLayer}
-              className="space-y-4"
+              className="space-y-3 sm:space-y-4"
             >
-              <span className="inline-block font-body text-[0.65rem] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-brand-surface/60">
+              <span className="inline-block font-body text-[0.65rem] sm:text-xs uppercase tracking-[0.25em] text-brand-surface/60">
                 {current.subtitle}
               </span>
-              <p className="font-body text-brand-muted text-sm sm:text-base font-light leading-relaxed max-w-[42ch]">
+              
+              <p className="font-body text-brand-muted text-sm sm:text-base font-light leading-relaxed max-w-[40ch]">
                 <SplitWords text={current.description} reduceMotion={reduceMotion} />
               </p>
 
               <MagneticButton
                 onClick={() => alert(`Reserving spot for: ${current.title}`)}
-                className="mt-4 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full border border-brand-surface/20 text-brand-surface
-                  font-body text-[0.65rem] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em]
+                className="mt-3 px-6 sm:px-7 py-3 rounded-full border border-brand-surface/20 text-brand-surface
+                  font-body text-[0.65rem] sm:text-xs uppercase tracking-[0.25em]
                   hover:bg-brand-surface hover:text-brand-base hover:border-brand-surface
                   transition-colors duration-300 cursor-pointer touch-manipulation flex items-center gap-3 group"
               >
@@ -189,12 +187,11 @@ export default function HeroVisual() {
             </motion.div>
           </AnimatePresence>
         </div>
+
       </div>
 
-      {/* Visual panel — single clip-path wipe only. Previous version
-          stacked clip-path + continuous scale loop + mix-blend noise
-          texture concurrently on the same element; all three are gone. */}
-      <div className="relative w-full md:w-[58%] aspect-[4/5] md:aspect-auto md:h-full overflow-hidden bg-brand-base">
+      {/* Visual panel with clean clip-path wipe */}
+      <div className="relative w-full md:w-[55%] aspect-[4/5] md:aspect-auto md:h-full overflow-hidden bg-brand-base">
         <AnimatePresence mode="sync" initial={false}>
           <motion.div
             key={current.id}

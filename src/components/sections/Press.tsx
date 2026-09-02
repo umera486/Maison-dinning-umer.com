@@ -1,204 +1,187 @@
-// components/sections/Press.tsx
+// components/sections/DigitalMenu.tsx
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import StackSection from "@/components/layout/StackSection";
+import MagneticButton from "@/components/shared/MagneticButton";
 
-interface PressQuote {
+interface MenuItem {
   id: string;
-  number: string;
-  publication: string;
-  quote: string;
-  location: string;
-  year: string;
+  name: string;
+  price: string;
+  badge?: string;
 }
 
-const pressQuotes: PressQuote[] = [
+interface MenuCategory {
+  id: string;
+  number: string;
+  name: string;
+  items: MenuItem[];
+}
+
+const menuCategories: MenuCategory[] = [
   {
-    id: "timeout",
+    id: "bbq",
     number: "01",
-    publication: "Time Out London",
-    quote: "The tandoor here runs hotter and more honest than anywhere else claiming Lahori roots in the city.",
-    location: "London",
-    year: "2026",
+    name: "BBQ & Grills",
+    items: [
+      { id: "1", name: "Royal Malai Boti", price: "£18.50", badge: "Chef's Pick" },
+      { id: "2", name: "Lahori Seekh Kebab", price: "£16.00" },
+      { id: "3", name: "Smoked Lamb Chops", price: "£24.00", badge: "Signature" },
+      { id: "4", name: "Tandoori Jhinga Prawns", price: "£22.00" },
+    ],
   },
   {
-    id: "halalguide",
+    id: "karahi",
     number: "02",
-    publication: "The Halal Food Guide",
-    quote: "Fully certified, unapologetically Punjabi, and plated with a precision usually reserved for tasting menus.",
-    location: "UK-wide",
-    year: "2026",
+    name: "Karahi & Wok",
+    items: [
+      { id: "5", name: "Shinwari Mutton Karahi", price: "£36.00", badge: "Must Try" },
+      { id: "6", name: "Lahori Chicken Karahi", price: "£28.00" },
+      { id: "7", name: "Desi Ghee Boun Karahi", price: "£32.00" },
+      { id: "8", name: "Peshawari Balti Gosht", price: "£30.00" },
+    ],
   },
   {
-    id: "eater",
+    id: "specials",
     number: "03",
-    publication: "Eater London",
-    quote: "The Shahi Reserve chai service alone is worth the booking — hand-blended, unhurried, genuinely rare.",
-    location: "London",
-    year: "2025",
+    name: "Shahi Mains",
+    items: [
+      { id: "9", name: "Royal Lahori Nihari", price: "£22.00", badge: "Limited Daily" },
+      { id: "10", name: "Peshawari Namkeen Gosht", price: "£34.00" },
+      { id: "11", name: "Shahi Murg Handi", price: "£26.00" },
+      { id: "12", name: "Shahi Haleem Reserve", price: "£20.00" },
+    ],
   },
   {
-    id: "zomato",
+    id: "rice",
     number: "04",
-    publication: "Zomato Editor's Pick",
-    quote: "Nihari that tastes like it was simmered overnight, because it was. A rare thing done properly.",
-    location: "UK",
-    year: "2025",
+    name: "Biryani & Breads",
+    items: [
+      { id: "13", name: "Dum Pukht Mutton Biryani", price: "£21.00", badge: "Best Seller" },
+      { id: "14", name: "Khamiri Naan", price: "£4.50" },
+      { id: "15", name: "Roghani Naan", price: "£5.50" },
+      { id: "16", name: "Taftan Saffron Bread", price: "£6.00" },
+    ],
   },
 ];
 
-const HOVER_LOCK_MS = 350;
-
-const gpuLayer: React.CSSProperties = {
-  willChange: "transform, opacity",
-  transform: "translateZ(0)",
-  backfaceVisibility: "hidden",
-};
-
-export default function Press({ index }: { index: number }) {
-  const [activeId, setActiveId] = useState<string>("timeout");
-  const [isLocked, setIsLocked] = useState(false);
-  const lockTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const reduceMotion = useReducedMotion() ?? false;
-
-  const activeItem = pressQuotes.find((item) => item.id === activeId) ?? pressQuotes[0];
-
-  // Debounces onMouseEnter so a fast sweep across the list can't fire the
-  // AnimatePresence swap 4x in under a second.
-  const setActive = useCallback(
-    (id: string) => {
-      if (id === activeId || isLocked) return;
-      setActiveId(id);
-      setIsLocked(true);
-      if (lockTimeout.current) clearTimeout(lockTimeout.current);
-      lockTimeout.current = setTimeout(() => setIsLocked(false), HOVER_LOCK_MS);
-    },
-    [activeId, isLocked]
-  );
+export default function DigitalMenu({ index }: { index: number }) {
+  const [activeCategory, setActiveCategory] = useState<string>("bbq");
+  const currentCategoryData = menuCategories.find((cat) => cat.id === activeCategory) || menuCategories[0];
 
   return (
     <StackSection
       index={index}
-      className="bg-brand-base text-brand-surface flex flex-col justify-between py-8 sm:py-12 md:py-16 relative overflow-hidden"
+      className="bg-[#FAF7F2] text-[#0D0402] flex flex-col justify-between py-10 sm:py-14 md:py-16 relative overflow-hidden select-none"
     >
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex justify-between px-6 sm:px-12">
-        <div className="w-px h-full bg-brand-surface" />
-        <div className="w-px h-full bg-brand-surface hidden md:block" />
-        <div className="w-px h-full bg-brand-surface" />
-      </div>
+      {/* Subtle light background dot matrix */}
+      <div 
+        aria-hidden 
+        className="absolute inset-0 pointer-events-none opacity-[0.04]"
+        style={{
+          backgroundImage: `radial-gradient(#0D0402 1px, transparent 1px)`,
+          backgroundSize: "28px 28px"
+        }}
+      />
 
-      <div className="px-5 sm:px-8 md:px-16 flex flex-col md:flex-row md:items-end justify-between gap-4 z-10 shrink-0">
+      {/* Header Section — Compact & Tight */}
+      <div className="px-6 sm:px-12 md:px-20 z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 sm:mb-3">
-            <span className="w-6 h-[1px] bg-brand-accent" />
-            <span className="font-body text-[0.6rem] sm:text-xs uppercase tracking-[0.3em] text-brand-accent">
-              Critical Record
-            </span>
-          </div>
-          <h2 className="font-heading font-light italic leading-[1.02] tracking-tight text-[clamp(2.2rem,5vw,4.8rem)] max-w-4xl text-balance">
-            Praised by the UK&rsquo;s sharpest food press.
+          <span className="font-body text-[10px] uppercase tracking-[0.4em] text-[#966A1E] block mb-2 font-bold">
+            The Digital Dastarkhwan
+          </span>
+          <h2 className="font-heading italic font-normal tracking-tight text-[clamp(2.2rem,5vw,5rem)] leading-[0.95] text-[#0D0402]">
+            Master <span className="not-italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#0D0402] via-[#0D0402] to-[#966A1E]">Menu.</span>
           </h2>
         </div>
-        <div className="font-body text-[10px] sm:text-xs uppercase tracking-[0.3em] text-brand-muted pb-1">
-          [ Verified Coverage ]
-        </div>
+        <p className="font-body text-xs sm:text-sm text-[#2C201C] font-normal max-w-xs leading-relaxed">
+          Mughal lineage and Lahori street mastery, curated into an elite editorial spread.
+        </p>
       </div>
 
-      <div className="relative w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-16 my-auto z-10 py-4 sm:py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center border-t border-brand-surface/15">
-          <div className="lg:col-span-6 flex flex-col divide-y divide-brand-surface/15">
-            {pressQuotes.map((item) => {
-              const isActive = activeId === item.id;
-              return (
+      {/* Asymmetric / Non-Linear Category Navigation (Scattered Editorial Placement) */}
+      <div className="px-6 sm:px-12 md:px-20 mt-6 sm:mt-8 z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-5xl">
+        {menuCategories.map((cat, idx) => {
+          const isActive = cat.id === activeCategory;
+          // Apply slight non-linear vertical staggering offsets on desktop for avant-garde layout
+          const offsetClass = idx === 1 ? "lg:translate-y-3" : idx === 2 ? "lg:-translate-y-2" : idx === 3 ? "lg:translate-y-2" : "";
+
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`relative group px-4 py-3 sm:py-3.5 font-body text-[11px] sm:text-xs uppercase tracking-[0.25em] transition-all duration-300 cursor-pointer overflow-hidden text-left flex flex-col justify-between min-h-[70px] border ${
+                isActive
+                  ? "bg-[#0D0402] text-[#FAF7F2] border-[#0D0402] shadow-md"
+                  : "bg-transparent text-[#2C0102] border-[#0D0402]/20 hover:border-[#0D0402]"
+              } ${offsetClass}`}
+            >
+              <span className={`text-[9px] font-mono opacity-60 ${isActive ? "text-[#966A1E]" : "text-[#966A1E]"}`}>
+                {cat.number}
+              </span>
+              <span className="font-semibold tracking-wider relative z-10 truncate">{cat.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Compressed Master Menu Grid — No descriptions, clean ultra-minimal rows */}
+      <div className="px-6 sm:px-12 md:px-20 my-6 sm:my-8 z-10 max-w-6xl w-full mx-auto">
+        <div className="relative border-t border-b border-[#0D0402]/15 py-4 sm:py-6">
+          
+          <div className="flex items-center justify-between pb-3 mb-4 font-body text-[9px] uppercase tracking-[0.3em] text-[#966A1E] font-bold">
+            <span>Index · {currentCategoryData.name}</span>
+            <span>Rate (GBP)</span>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              style={{ willChange: "transform, opacity" }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-4 sm:gap-y-5 transform-gpu"
+            >
+              {currentCategoryData.items.map((item, idx) => (
                 <div
                   key={item.id}
-                  onMouseEnter={() => !reduceMotion && setActive(item.id)}
-                  onClick={() => setActive(item.id)}
-                  className="group relative py-4 sm:py-6 cursor-pointer flex items-center justify-between transition-colors duration-500"
+                  className="group relative flex items-baseline justify-between border-b border-[#0D0402]/10 pb-3.5"
                 >
-                  <div className="flex items-center gap-5 sm:gap-8">
-                    <span
-                      className={`font-body text-xs sm:text-sm tracking-widest transition-colors duration-300 ${
-                        isActive ? "text-brand-accent font-bold" : "text-brand-muted/50"
-                      }`}
-                    >
-                      {item.number}
-                    </span>
-                    <div>
-                      <h3
-                        className={`font-heading text-lg sm:text-2xl tracking-tight transition-all duration-500 ${
-                          isActive ? "text-brand-surface translate-x-2" : "text-brand-surface/40 group-hover:text-brand-surface/70"
-                        }`}
-                      >
-                        {item.publication}
-                      </h3>
-                      <span className="font-body text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-brand-muted mt-0.5 block">
-                        {item.location} — {item.year}
+                  <div className="flex items-baseline gap-3 pr-4 truncate">
+                    <span className="font-body text-[10px] text-[#966A1E] font-mono font-bold shrink-0">0{idx + 1}</span>
+                    <h3 className="font-heading italic font-bold text-lg sm:text-xl text-[#0D0402] truncate">
+                      {item.name}
+                    </h3>
+                    {item.badge && (
+                      <span className="text-[8px] uppercase tracking-widest px-1.5 py-0.5 bg-[#966A1E]/15 text-[#734E12] font-bold shrink-0 hidden sm:inline-block">
+                        {item.badge}
                       </span>
-                    </div>
+                    )}
                   </div>
-
-                  <div
-                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-brand-surface/20 flex items-center justify-center transition-all duration-500 shrink-0 ${
-                      isActive
-                        ? "bg-brand-accent text-brand-base border-brand-accent scale-110"
-                        : "text-brand-surface/30 group-hover:border-brand-surface/60 group-hover:text-brand-surface"
-                    }`}
-                  >
-                    <span className="text-[10px] sm:text-xs transform -rotate-45">→</span>
-                  </div>
+                  <span className="font-heading text-lg sm:text-xl text-[#0D0402] font-semibold shrink-0">
+                    {item.price}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="lg:col-span-6 lg:pl-6">
-            <div className="relative p-6 sm:p-10 md:p-12 rounded-3xl bg-[#131316] border border-brand-surface/10 shadow-2xl overflow-hidden flex flex-col justify-between min-h-[300px] sm:min-h-[360px]">
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-accent/10 rounded-full blur-3xl pointer-events-none" />
-
-              {/* Opacity/y only — the blur-filter cross-fade this replaced
-                  was compositing a full blur pass on every hover swap. */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeItem.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  style={gpuLayer}
-                  className="relative z-10 flex flex-col justify-between h-full space-y-6 sm:space-y-8"
-                >
-                  <div className="font-heading text-5xl sm:text-6xl text-brand-accent/40 leading-none">&ldquo;</div>
-
-                  <p className="font-heading italic font-light text-[clamp(1.25rem,2.5vw,2.2rem)] text-brand-surface leading-snug">
-                    {activeItem.quote}
-                  </p>
-
-                  <div className="pt-6 border-t border-brand-surface/10 flex items-center justify-between">
-                    <div>
-                      <span className="block font-body text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-brand-accent mb-1">
-                        Verified Source
-                      </span>
-                      <span className="font-heading text-base sm:text-lg text-brand-surface tracking-wide">
-                        {activeItem.publication}
-                      </span>
-                    </div>
-                    <span className="font-body text-[11px] sm:text-xs text-brand-muted tracking-widest">
-                      [{activeItem.year}]
-                    </span>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
         </div>
       </div>
 
-      <div className="px-5 sm:px-8 md:px-16 flex items-center justify-between font-body text-[0.6rem] sm:text-xs uppercase tracking-[0.3em] text-brand-muted/60 border-t border-brand-surface/10 pt-4 sm:pt-5 z-10 shrink-0">
-        <span>Press Office</span>
-        <span>media@lahoriwala.co.uk</span>
+      {/* Bottom Action Bar — Compact */}
+      <div className="px-6 sm:px-12 md:px-20 z-10 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#0D0402]/15 font-body text-[11px] uppercase tracking-[0.25em]">
+        <span className="text-[#2C201C] font-medium">100% Zabiha Halal &amp; Authentic Prep</span>
+        <MagneticButton
+          onClick={() => alert("Opening reservation gateway...")}
+          className="w-full sm:w-auto px-6 py-3 bg-[#0D0402] text-[#FAF7F2] font-bold rounded-none cursor-pointer transition-transform duration-300 hover:scale-105 shadow-md text-center"
+        >
+          Reserve Dastarkhwan
+        </MagneticButton>
       </div>
     </StackSection>
   );
