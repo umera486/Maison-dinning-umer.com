@@ -3,15 +3,16 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useSpring, type Variants } from "framer-motion";
-import ReservationModal from "./ReservationModal";
+import MagneticButton from "@/components/shared/MagneticButton";
 
-// Dynamic routing mapped to our dedicated pages
+// Digital Menu-Centric Navigation Routes
 const navLinks = [
-  { title: "The Reserve", href: "/shahi-reserve" },
+  { title: "The Menu", href: "/private-dining" },
+  { title: "Pre-Order Feasts", href: "/shahi-reserve" },
   { title: "Our Story", href: "/heritage" },
-  { title: "Private Dining", href: "/private-dining" },
-  { title: "Book & Contact", href: "/contact" },
+  { title: "Dispatch & Track", href: "/contact" },
 ];
 
 const LINK_SPRING = { stiffness: 160, damping: 14, mass: 0.4 };
@@ -88,7 +89,7 @@ function SealButton({
       onClick={onClick}
       aria-label={label}
       aria-expanded={open}
-      className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center cursor-pointer text-white transform-gpu"
+      className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center cursor-pointer text-white transform-gpu hover:text-[#E5A93C] transition-colors"
       style={{ willChange: "transform" }}
     >
       <motion.svg
@@ -98,7 +99,7 @@ function SealButton({
         transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
         style={{ willChange: "transform" }}
       >
-        <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.5" />
+        <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.4" />
         <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" strokeWidth="0.6" opacity="0.3" strokeDasharray="2 3" />
         <line x1="16" y1="24" x2="32" y2="24" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
         <line
@@ -138,13 +139,55 @@ function JaliBackdrop() {
 }
 
 export default function Navbar() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const [origin, setOrigin] = useState({ x: 0, y: 0, radius: 0 });
   const [visible, setVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
   const sealRef = useRef<HTMLButtonElement | null>(null);
+
+  // Real-time Cart synchronization bridge
+  useEffect(() => {
+    const handleCartUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ count: number }>;
+      if (typeof customEvent.detail?.count === "number") {
+        setCartCount(customEvent.detail.count);
+      }
+    };
+
+    window.addEventListener("cart:update", handleCartUpdate);
+
+    try {
+      const stored = localStorage.getItem("lw-cart-store");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const items = parsed?.state?.items || [];
+        const count = items.reduce((acc: number, item: { quantity?: number }) => acc + (item.quantity || 1), 0);
+        setCartCount(count);
+      }
+    } catch {
+      // Graceful fallback
+    }
+
+    return () => window.removeEventListener("cart:update", handleCartUpdate);
+  }, []);
+
+  const handleOpenCart = useCallback(() => {
+    window.dispatchEvent(new CustomEvent("cart:open"));
+  }, []);
+
+  const handleOrderNow = useCallback(() => {
+    if (window.location.pathname === "/") {
+      const menuSection = document.getElementById("menu");
+      if (menuSection) {
+        menuSection.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+    router.push("/#menu");
+  }, [router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -170,13 +213,12 @@ export default function Navbar() {
     setOrigin({ x, y, radius: Math.hypot(window.innerWidth, window.innerHeight) });
     setMenuOpen(true);
   }, []);
+
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
   useEffect(() => {
@@ -201,32 +243,23 @@ export default function Navbar() {
 
   return (
     <>
-      <div
-        aria-hidden
-        className="fixed top-0 left-0 right-0 z-[90] h-32 sm:h-36 pointer-events-none"
-        style={{
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          maskImage: "linear-gradient(to bottom, black 35%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 35%, transparent 100%)",
-        }}
-      />
-
       <motion.header
         initial={{ y: 0 }}
         animate={{ y: visible ? 0 : "-120%" }}
         transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
         className={`fixed top-0 left-0 right-0 z-[100] flex items-center justify-between
-          px-5 sm:px-8 md:px-16 py-4 sm:py-5 transform-gpu transition-colors duration-500 ${
-            isScrolled ? "bg-[#1A0B08]/90 backdrop-blur-md border-b border-[#E5A93C]/15 shadow-2xl" : "bg-transparent"
+          px-4 sm:px-8 md:px-16 py-3.5 sm:py-5 transform-gpu transition-colors duration-500 ${
+            isScrolled ? "bg-[#140805] border-b border-[#E5A93C]/15 shadow-2xl" : "bg-transparent"
           }`}
         style={{ mixBlendMode: isScrolled ? "normal" : "difference" }}
       >
-        <Link href="/" className="font-heading text-lg sm:text-xl tracking-[0.15em] text-white">
+        {/* Brand Monogram: Compact on mobile */}
+        <Link href="/" className="font-heading text-sm sm:text-base lg:text-xl tracking-[0.12em] lg:tracking-[0.15em] text-white shrink-0">
           LAHORI WALA
         </Link>
 
-        <nav className="hidden md:flex items-center gap-10">
+        {/* Center Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-9">
           {navLinks.map((link) => (
             <MagneticLink key={link.href} href={link.href}>
               {link.title}
@@ -234,22 +267,46 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4 sm:gap-5">
-          <div className="isolate" style={{ mixBlendMode: "normal" }}>
-            <button
-              onClick={() => setOrderModalOpen(true)}
-              className="relative group px-4 sm:px-5 py-2 overflow-hidden rounded-full bg-[#E5A93C]/10 border border-[#E5A93C] text-[#E5A93C] font-body text-[10px] sm:text-xs uppercase tracking-[0.2em] transition-all duration-500 hover:bg-[#E5A93C] hover:text-[#0D0D0F] shadow-[0_0_15px_rgba(229,169,60,0.15)] cursor-pointer transform-gpu"
-            >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-[#E5A93C]/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 transform-gpu" />
-              <span className="relative z-10 font-medium">Reserve</span>
-            </button>
-          </div>
+        {/* Action Controls Cluster: Tighter mobile spacing */}
+        <div className="flex items-center gap-2 sm:gap-4 isolate" style={{ mixBlendMode: "normal" }}>
+          
+          {/* Order Now Trigger: Hidden on extremely small screens (<360px), compact otherwise */}
+          <MagneticButton
+            onClick={handleOrderNow}
+            className="hidden min-[360px]:inline-flex px-3.5 sm:px-6 py-1.5 sm:py-2 rounded-full border border-[#E5A93C]/50 bg-[#120604] text-white font-body text-[9px] sm:text-xs uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(229,169,60,0.12)]"
+          >
+            <span className="hidden sm:inline">Order Now</span>
+            <span className="inline sm:hidden">Order</span>
+          </MagneticButton>
 
+          {/* Luxury Cart Trigger: Crisp and completely solid, no blur */}
+          <button
+            onClick={handleOpenCart}
+            className="group relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/20 bg-[#120604] text-white hover:border-[#E5A93C] transition-all duration-300 cursor-pointer transform-gpu shrink-0"
+            aria-label={`Open Cart with ${cartCount} items`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-current fill-none stroke-[1.8] group-hover:text-[#E5A93C] transition-colors"
+            >
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
+            <span className="hidden sm:inline font-body text-[10px] uppercase tracking-[0.2em] font-semibold">
+              Cart
+            </span>
+            <span className="font-mono text-[10px] sm:text-xs font-bold text-[#E5A93C] tracking-wider">
+              [{cartCount}]
+            </span>
+          </button>
+
+          {/* Architectural Seal Menu Toggle */}
           <SealButton
             open={menuOpen}
             onClick={() => (menuOpen ? closeMenu() : openMenu())}
             registerRef={(el) => (sealRef.current = el)}
-            label={menuOpen ? "Close menu" : "Open menu"}
+            label={menuOpen ? "Close navigation" : "Open navigation"}
           />
         </div>
       </motion.header>
@@ -265,7 +322,7 @@ export default function Navbar() {
             animate={{ clipPath: `circle(${origin.radius}px at ${origin.x}px ${origin.y}px)` }}
             exit={{ clipPath: `circle(0px at ${origin.x}px ${origin.y}px)` }}
             transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
-            style={{ willChange: "clip-path", backgroundColor: "#1A0B08" }}
+            style={{ willChange: "clip-path", backgroundColor: "#140805" }}
             className="fixed inset-0 z-[110] overflow-hidden transform-gpu"
           >
             <JaliBackdrop />
@@ -289,7 +346,7 @@ export default function Navbar() {
                 className="flex items-center justify-between"
               >
                 <span className="font-body text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#9E988F]">
-                  The Royal Index
+                  The Culinary Index // London
                 </span>
                 <SealButton open={menuOpen} onClick={closeMenu} registerRef={() => {}} label="Close menu" />
               </motion.div>
@@ -326,14 +383,26 @@ export default function Navbar() {
                 animate="visible"
                 className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 border-t border-[#F5EFEB]/10 pt-5 sm:pt-6 text-[#9E988F] font-body text-[10px] sm:text-xs tracking-widest uppercase"
               >
-                <p>Ghakhar Plaza, Suite 402 — London / Lahore</p>
-                <div className="flex gap-5 sm:gap-6">
-                  <a href="#" className="hover:text-[#E5A93C] transition-colors">Instagram</a>
-                  <button onClick={() => { closeMenu(); setOrderModalOpen(true); }} className="hover:text-[#E5A93C] transition-colors uppercase cursor-pointer">
-                    Reservations
+                <p>Ghakhar Plaza, Suite 402 — Central London</p>
+                <div className="flex gap-5 sm:gap-6 items-center flex-wrap">
+                  <button
+                    onClick={() => {
+                      closeMenu();
+                      handleOpenCart();
+                    }}
+                    className="hover:text-[#E5A93C] transition-colors uppercase cursor-pointer"
+                  >
+                    View Cart [{cartCount}]
                   </button>
-                  <Link href="/heritage" onClick={closeMenu} className="hover:text-[#E5A93C] transition-colors">
-                    Archive
+                  <Link
+                    href="/#menu"
+                    onClick={closeMenu}
+                    className="hover:text-[#E5A93C] transition-colors uppercase text-[#E5A93C]"
+                  >
+                    Order Online
+                  </Link>
+                  <Link href="/contact" onClick={closeMenu} className="hover:text-[#E5A93C] transition-colors">
+                    Dispatch Hotline
                   </Link>
                 </div>
               </motion.div>
@@ -341,8 +410,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <ReservationModal isOpen={orderModalOpen} onClose={() => setOrderModalOpen(false)} />
     </>
   );
 }

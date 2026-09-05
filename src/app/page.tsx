@@ -34,12 +34,22 @@ export default function Home() {
             <HeroVisual />
           </StackSection>
 
-          {/* Internal loop consumes indices 2, 3, 4 */}
-          <CulinaryPillars startIndex={2} />
+          {/* Culinary Pillars (Normal Flow) */}
+          <div className="relative z-10 w-full bg-brand-base">
+            <CulinaryPillars />
+          </div>
 
-          <Gallery index={5} />
-          <Press index={6} />
-          <Footer index={7} />
+          {/* Shoppable Gallery (Normal Flow) */}
+          <Gallery />
+
+          {/* Press & Footer (Retaining Stack Section Behavior) */}
+          <StackSection index={2}>
+            <Press />
+          </StackSection>
+
+          <StackSection index={3}>
+            <Footer />
+          </StackSection>
         </>
       )}
     </main>

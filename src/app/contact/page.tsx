@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer
 import gsap from "gsap";
 import Navbar from "@/components/Hero/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
+import Footer from "@/components/sections/Footer";
 
 interface Channel {
   id: string;
@@ -414,56 +415,7 @@ export default function ContactPage() {
       </section>
 
       {/* Location / Physical Address Footer */}
-      <section className="bg-[#120604] text-[#FAF7F2] px-6 sm:px-10 md:px-16 py-16 sm:py-24 border-t border-[#C59438]/20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8">
-          <div className="space-y-2">
-            <span className="font-mono text-xs font-bold tracking-[0.25em] text-[#C59438] uppercase block">
-              LOCATION &amp; VALET
-            </span>
-            <p className="font-body text-base font-normal text-[#FAF7F2] leading-relaxed">
-              Ghakhar Plaza, Suite 402
-              <br />
-              Central London, UK
-            </p>
-            <span className="font-mono text-[11px] text-[#FAF7F2]/60 block tracking-widest pt-1">
-              Private entrance &amp; curbside pickup
-            </span>
-          </div>
-
-          <div className="space-y-2">
-            <span className="font-mono text-xs font-bold tracking-[0.25em] text-[#C59438] uppercase block">
-              SERVICE HOURS
-            </span>
-            <p className="font-body text-base font-normal text-[#FAF7F2] leading-relaxed">
-              Daily Dining: 12:00 — 22:30
-              <br />
-              Kitchen Dispatch: Until 22:00
-            </p>
-            <span className="font-mono text-[11px] text-[#FAF7F2]/60 block tracking-widest pt-1">
-              Open 7 days a week including bank holidays
-            </span>
-          </div>
-
-          <div className="space-y-2">
-            <span className="font-mono text-xs font-bold tracking-[0.25em] text-[#C59438] uppercase block">
-              DIRECT DESK
-            </span>
-            <p className="font-body text-base font-normal text-[#FAF7F2] leading-relaxed">
-              concierge@lahoriwala.co.uk
-              <br />
-              +44 20 7946 0000
-            </p>
-            <span className="font-mono text-[11px] text-[#FAF7F2]/60 block tracking-widest pt-1">
-              Immediate response during service hours
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-14 pt-6 border-t border-[#FAF7F2]/15 max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-[11px] tracking-[0.25em] text-[#FAF7F2]/60 uppercase">
-          <span>Lahori Wala — Central London</span>
-          <span>EST. 1947 // CULINARY ARCHIVE</span>
-        </div>
-      </section>
+      <Footer />
     </main>
   );
 }

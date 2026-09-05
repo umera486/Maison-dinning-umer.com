@@ -14,6 +14,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Hero/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
+import Footer from "@/components/sections/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -342,34 +343,7 @@ export default function ShahiReservePage() {
       </section>
 
       {/* Close */}
-      <section className="bg-[#140805] text-[#FAF7F2] px-5 sm:px-8 md:px-16 py-20 sm:py-28 md:py-32 text-center">
-        <motion.h2
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-          variants={fadeUp}
-          className="font-heading italic font-light leading-[1.02] text-[clamp(2rem,5.5vw,3.75rem)] max-w-3xl mx-auto mb-10 sm:mb-12 text-balance"
-        >
-          The ledger closes when the season does. Reserve your seating now.
-        </motion.h2>
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-          variants={fadeUp}
-          className="flex justify-center"
-        >
-          <MagneticButton
-            onClick={() => alert("Opening the Shahi Reserve booking flow…")}
-            className="px-8 sm:px-10 py-4 sm:py-5 rounded-none bg-[#C59438] text-[#140805] font-body text-xs uppercase tracking-[0.25em] font-medium cursor-pointer"
-          >
-            Request a Reserve Seating
-          </MagneticButton>
-        </motion.div>
-        <p className="mt-16 sm:mt-20 font-mono text-[10px] tracking-[0.25em] text-[#FAF7F2]/40 uppercase">
-          Lahori Wala — Central London
-        </p>
-      </section>
+      <Footer />
     </main>
   );
 }

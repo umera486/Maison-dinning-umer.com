@@ -17,8 +17,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Maison Dining | Premium Dining",
-  description: "Experience culinary excellence.",
+  title: "Lahori Wala | Premium Dining in London",
+  description: "Experience authentic Lahori culinary excellence in Central London.",
 };
 
 export default function RootLayout({

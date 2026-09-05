@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import Navbar from "@/components/Hero/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
+import Footer from "@/components/sections/Footer";
 
 interface Era {
   index: string;
@@ -295,44 +296,7 @@ export default function HeritagePage() {
       </section>
 
       {/* Closing Reservation Section */}
-      <section className="relative border-t border-[#120604]/20 bg-[#120604] text-[#FAF7F2] px-6 sm:px-10 md:px-16 py-20 sm:py-28 md:py-36">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end max-w-7xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={fadeUp}
-            className="md:col-span-8 space-y-4"
-          >
-            <span className="font-mono text-xs uppercase tracking-[0.35em] text-[#E5A93C] font-semibold block">
-              The Table Awaits
-            </span>
-            <h2 className="font-heading italic font-bold leading-[0.95] text-[clamp(2.4rem,6vw,5.2rem)] text-[#FAF7F2]">
-              Taste seven decades of heritage on a single London table.
-            </h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={fadeUp}
-            className="md:col-span-4 flex md:justify-end"
-          >
-            <MagneticButton
-              onClick={() => alert("Opening reservation concierge…")}
-              className="w-full md:w-auto px-8 sm:px-10 py-4 sm:py-5 rounded-none bg-[#C59438] text-[#120604] font-body text-xs uppercase tracking-[0.25em] font-bold cursor-pointer hover:bg-[#FAF7F2] transition-colors duration-300 shadow-xl"
-            >
-              Reserve Your Table
-            </MagneticButton>
-          </motion.div>
-        </div>
-
-        <div className="mt-16 pt-6 border-t border-[#FAF7F2]/15 max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-[10px] tracking-[0.25em] text-[#FAF7F2]/60 uppercase">
-          <span>Lahori Wala — Central London</span>
-          <span>Walled City Lineage // Est. 1947</span>
-        </div>
-      </section>
+      <Footer />
     </main>
   );
 }

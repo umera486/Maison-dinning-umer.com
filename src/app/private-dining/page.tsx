@@ -12,6 +12,7 @@ import {
 } from "framer-motion";
 import Navbar from "@/components/Hero/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
+import Footer from "@/components/sections/Footer";
 
 interface Hour {
   mark: number; // 0–12
@@ -277,36 +278,7 @@ export default function SignatureVigilPage() {
       </div>
 
       {/* Close */}
-      <section className="px-6 sm:px-10 md:px-16 py-20 sm:py-28 md:py-32 text-center bg-[#FAF7F2] border-t border-[#120604]/15">
-        <motion.h2
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-          variants={fadeUp}
-          className="font-heading italic font-bold leading-[1.02] text-[clamp(2.2rem,5.5vw,4.2rem)] max-w-3xl mx-auto mb-10 sm:mb-12 text-balance text-[#120604]"
-        >
-          The pot is already on. Come find out when it&apos;s ready.
-        </motion.h2>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-          variants={fadeUp}
-          className="flex justify-center"
-        >
-          <MagneticButton
-            onClick={() => alert("Opening the reservation flow…")}
-            className="px-9 sm:px-12 py-4 sm:py-5 rounded-none bg-[#120604] text-[#FAF7F2] font-body text-xs uppercase tracking-[0.25em] font-bold cursor-pointer hover:bg-[#C59438] hover:text-[#120604] transition-colors duration-300 shadow-xl"
-          >
-            Reserve Your Table
-          </MagneticButton>
-        </motion.div>
-
-        <p className="mt-16 sm:mt-20 font-mono text-xs tracking-[0.25em] text-[#120604]/60 font-semibold uppercase">
-          Lahori Wala — Central London
-        </p>
-      </section>
+      <Footer />
     </main>
   );
 }

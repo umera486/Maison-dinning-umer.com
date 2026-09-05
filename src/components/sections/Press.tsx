@@ -1,15 +1,15 @@
 // components/sections/DigitalMenu.tsx
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import StackSection from "@/components/layout/StackSection";
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import MagneticButton from "@/components/shared/MagneticButton";
 
 interface MenuItem {
   id: string;
   name: string;
-  price: string;
+  descriptor: string;
+  price: number;
   badge?: string;
 }
 
@@ -22,14 +22,14 @@ interface MenuCategory {
 
 const menuCategories: MenuCategory[] = [
   {
-    id: "bbq",
+    id: "tikka",
     number: "01",
-    name: "BBQ & Grills",
+    name: "Lahori Tikka & Grills",
     items: [
-      { id: "1", name: "Royal Malai Boti", price: "£18.50", badge: "Chef's Pick" },
-      { id: "2", name: "Lahori Seekh Kebab", price: "£16.00" },
-      { id: "3", name: "Smoked Lamb Chops", price: "£24.00", badge: "Signature" },
-      { id: "4", name: "Tandoori Jhinga Prawns", price: "£22.00" },
+      { id: "t1", name: "Classic Lahori Fire Tikka", descriptor: "Charcoal-smoked leg quarter, 900°C spice rub", price: 14.50, badge: "Must Try" },
+      { id: "t2", name: "Royal Malai Boti Skewer", descriptor: "Tender cream-marinated chicken, butter glaze", price: 16.00, badge: "Chef's Pick" },
+      { id: "t3", name: "Smoked Lamb Rib Chops", descriptor: "Aged chops charred over open coals", price: 24.00, badge: "Signature" },
+      { id: "t4", name: "Tandoori Seekh Kebab", descriptor: "Hand-minced prime mutton, green chillies", price: 15.00 },
     ],
   },
   {
@@ -37,10 +37,9 @@ const menuCategories: MenuCategory[] = [
     number: "02",
     name: "Karahi & Wok",
     items: [
-      { id: "5", name: "Shinwari Mutton Karahi", price: "£36.00", badge: "Must Try" },
-      { id: "6", name: "Lahori Chicken Karahi", price: "£28.00" },
-      { id: "7", name: "Desi Ghee Boun Karahi", price: "£32.00" },
-      { id: "8", name: "Peshawari Balti Gosht", price: "£30.00" },
+      { id: "k1", name: "Shinwari Mutton Karahi", descriptor: "Pure tomato base, crushed black pepper", price: 36.00, badge: "Legendary" },
+      { id: "k2", name: "Lahori Chicken Karahi", descriptor: "Deep wok cooked with fresh ginger & ghee", price: 28.00 },
+      { id: "k3", name: "Desi Ghee Special Karahi", descriptor: "Rich, slow-simmered heritage recipe", price: 32.00 },
     ],
   },
   {
@@ -48,141 +47,229 @@ const menuCategories: MenuCategory[] = [
     number: "03",
     name: "Shahi Mains",
     items: [
-      { id: "9", name: "Royal Lahori Nihari", price: "£22.00", badge: "Limited Daily" },
-      { id: "10", name: "Peshawari Namkeen Gosht", price: "£34.00" },
-      { id: "11", name: "Shahi Murg Handi", price: "£26.00" },
-      { id: "12", name: "Shahi Haleem Reserve", price: "£20.00" },
+      { id: "s1", name: "Royal Lahori Nihari", descriptor: "12-hour slow-cooked shank, marrow gravy", price: 22.00, badge: "Limited Daily" },
+      { id: "s2", name: "Peshawari Namkeen Gosht", descriptor: "Minimalist salt-roasted tender mutton", price: 34.00 },
+      { id: "s3", name: "Shahi Murg Handi", descriptor: "Velvety cashew and tomato cream sauce", price: 26.00 },
     ],
   },
   {
-    id: "rice",
+    id: "breads",
     number: "04",
-    name: "Biryani & Breads",
+    name: "Breads & Sides",
     items: [
-      { id: "13", name: "Dum Pukht Mutton Biryani", price: "£21.00", badge: "Best Seller" },
-      { id: "14", name: "Khamiri Naan", price: "£4.50" },
-      { id: "15", name: "Roghani Naan", price: "£5.50" },
-      { id: "16", name: "Taftan Saffron Bread", price: "£6.00" },
+      { id: "b1", name: "Khamiri Naan", descriptor: "Fermented clay-oven hearth bread", price: 4.50 },
+      { id: "b2", name: "Roghani Sesame Naan", descriptor: "Butter-brushed with roasted sesame", price: 5.50 },
+      { id: "b3", name: "Dum Pukht Mutton Biryani", descriptor: "Aromatic long-grain basmati, layered meat", price: 21.00, badge: "Best Seller" },
     ],
   },
 ];
 
-export default function DigitalMenu({ index }: { index: number }) {
-  const [activeCategory, setActiveCategory] = useState<string>("bbq");
-  const currentCategoryData = menuCategories.find((cat) => cat.id === activeCategory) || menuCategories[0];
+interface MenuCardProps {
+  item: MenuItem;
+  index: number;
+  onAddToCart: (item: MenuItem) => void;
+}
+
+function MenuCard({ item, index, onAddToCart }: MenuCardProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const reduceMotion = useReducedMotion() ?? false;
+
+  const initialX = reduceMotion ? 0 : index % 2 === 0 ? -50 : 50;
+
+  const handleAddToCart = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onAddToCart(item);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 1500);
+    },
+    [item, onAddToCart]
+  );
 
   return (
-    <StackSection
-      index={index}
-      className="bg-[#FAF7F2] text-[#0D0402] flex flex-col justify-between py-10 sm:py-14 md:py-16 relative overflow-hidden select-none"
+    <motion.div
+      initial={{ opacity: 0, x: initialX, y: 15 }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="relative w-full aspect-[4/3] sm:aspect-[16/10] [perspective:1200px]"
     >
-      {/* Subtle light background dot matrix */}
-      <div 
-        aria-hidden 
-        className="absolute inset-0 pointer-events-none opacity-[0.04]"
-        style={{
-          backgroundImage: `radial-gradient(#0D0402 1px, transparent 1px)`,
-          backgroundSize: "28px 28px"
-        }}
-      />
+      <motion.div
+        className="w-full h-full relative cursor-pointer shadow-lg rounded-xl"
+        style={{ transformStyle: "preserve-3d" }}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
+        {/* FRONT FACE: Name, Price, Badge & Shiny Wave */}
+        <div className="absolute inset-0 [backface-visibility:hidden] overflow-hidden rounded-xl bg-[#0D0402] border border-[#FAF7F2]/15 p-4 sm:p-5 flex flex-col justify-between text-left">
+          
+          {/* Tapered & Feathered Glass Shine Effect */}
+          <motion.div 
+            className="absolute -top-[20%] -bottom-[20%] w-[80%] z-20 pointer-events-none blur-[6px]"
+            animate={{ left: ["-100%", "200%"] }}
+            transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+          >
+            <div 
+              className="w-full h-full bg-gradient-to-r from-transparent via-[#FAF7F2]/25 to-transparent"
+              style={{ clipPath: "polygon(30% 0, 50% 0, 100% 100%, 0% 100%)" }}
+            />
+          </motion.div>
 
-      {/* Header Section — Compact & Tight */}
-      <div className="px-6 sm:px-12 md:px-20 z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-        <div>
-          <span className="font-body text-[10px] uppercase tracking-[0.4em] text-[#966A1E] block mb-2 font-bold">
-            The Digital Dastarkhwan
-          </span>
-          <h2 className="font-heading italic font-normal tracking-tight text-[clamp(2.2rem,5vw,5rem)] leading-[0.95] text-[#0D0402]">
-            Master <span className="not-italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#0D0402] via-[#0D0402] to-[#966A1E]">Menu.</span>
-          </h2>
+          {/* Top Row: Badge & Price */}
+          <div className="flex items-center justify-between relative z-10">
+            {item.badge ? (
+              <span className="px-2 py-0.5 rounded-full bg-[#B91C1C]/30 border border-[#B91C1C]/50 font-body text-[7px] sm:text-[8px] font-bold uppercase tracking-[0.2em] text-[#E5A93C]">
+                {item.badge}
+              </span>
+            ) : <span />}
+            <span className="font-heading italic text-base sm:text-lg font-light text-[#E5A93C]">
+              £{item.price.toFixed(2)}
+            </span>
+          </div>
+
+          {/* Middle: Dish Name */}
+          <div className="my-auto relative z-10">
+            <h3 className="font-heading italic font-light text-lg sm:text-xl text-[#FAF7F2] leading-tight">
+              {item.name}
+            </h3>
+          </div>
+
+          {/* Bottom Tap Hint */}
+          <div className="pt-2 border-t border-[#FAF7F2]/10 flex items-center justify-between relative z-10">
+            <span className="font-body text-[5.5px] sm:text-[6px] uppercase tracking-[0.25em] text-[#FAF7F2]/50">
+              Tap for details
+            </span>
+            <span className="text-[#E5A93C] text-xs">→</span>
+          </div>
         </div>
-        <p className="font-body text-xs sm:text-sm text-[#2C201C] font-normal max-w-xs leading-relaxed">
-          Mughal lineage and Lahori street mastery, curated into an elite editorial spread.
+
+        {/* BACK FACE: Detailed Description & Prominent Add to Cart Button */}
+        <div 
+          className="absolute inset-0 [backface-visibility:hidden] overflow-hidden rounded-xl bg-[#0D0402] border border-[#E5A93C]/30 p-4 sm:p-5 flex flex-col justify-between text-left shadow-2xl"
+          style={{ transform: "rotateY(180deg)" }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[9px] text-[#E5A93C] uppercase tracking-widest">Details</span>
+            <span className="font-heading italic text-sm text-[#E5A93C]">£{item.price.toFixed(2)}</span>
+          </div>
+
+          <div className="my-auto space-y-1">
+            <h3 className="font-heading italic font-light text-base sm:text-lg text-[#FAF7F2]">
+              {item.name}
+            </h3>
+            <p className="font-body text-[0.6rem] sm:text-[0.65rem] text-[#FAF7F2]/70 leading-relaxed uppercase tracking-wider">
+              {item.descriptor}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-[#FAF7F2]/10">
+            <span className="font-body text-[5.5px] uppercase tracking-widest text-[#FAF7F2]/40">Instant Order</span>
+            
+            {/* Prominent Plus Button */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={handleAddToCart}
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md shrink-0 ${
+                isAdded 
+                  ? "bg-emerald-600 text-white" 
+                  : "bg-[#E5A93C] text-[#0D0402] hover:bg-[#FAF7F2]"
+              }`}
+              aria-label={`Add ${item.name} to cart`}
+            >
+              <span className="font-bold text-lg leading-none">
+                {isAdded ? "✓" : "+"}
+              </span>
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export default function DigitalMenu() {
+  const [activeCategory, setActiveCategory] = useState<string>("tikka");
+
+  const currentCategoryData = menuCategories.find((cat) => cat.id === activeCategory) || menuCategories[0];
+
+  const handleAddToCart = useCallback((item: MenuItem) => {
+    window.dispatchEvent(
+      new CustomEvent("addToCart", { 
+        detail: { 
+          dish: { id: item.id, name: item.name, price: item.price, descriptor: item.descriptor }, 
+          quantity: 1 
+        } 
+      })
+    );
+  }, []);
+
+  return (
+    <section className="relative isolate z-30 w-full bg-[#0D0402] text-[#FAF7F2] py-12 sm:py-16 px-4 sm:px-8 md:px-16 overflow-hidden">
+      {/* Ambient Crimson Glow Gradients */}
+      <div className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(185,28,28,0.15),transparent_70%)] blur-2xl" />
+      <div className="pointer-events-none absolute bottom-0 right-0 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(229,169,60,0.06),transparent_70%)] blur-3xl" />
+
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto mb-8 sm:mb-12 text-center relative z-10">
+        <span className="font-body text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#E5A93C] block mb-2 font-bold">
+          The Digital Dastarkhwan
+        </span>
+        <h2 className="font-heading italic font-light text-[clamp(2.25rem,5vw,4rem)] leading-[1.05] text-[#FAF7F2] mb-3">
+          Master <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FAF7F2] via-[#E5A93C] to-[#B91C1C]">Menu.</span>
+        </h2>
+        <p className="font-body text-xs sm:text-sm text-[#FAF7F2]/70 font-light max-w-[46ch] mx-auto leading-relaxed">
+          Charcoal-smoked Lahori tikka lineage and open-flame mastery, ready to flip and order instantly.
         </p>
       </div>
 
-      {/* Asymmetric / Non-Linear Category Navigation (Scattered Editorial Placement) */}
-      <div className="px-6 sm:px-12 md:px-20 mt-6 sm:mt-8 z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-5xl">
-        {menuCategories.map((cat, idx) => {
+      {/* Category Navigation Pills */}
+      <div className="max-w-4xl mx-auto mb-8 relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        {menuCategories.map((cat) => {
           const isActive = cat.id === activeCategory;
-          // Apply slight non-linear vertical staggering offsets on desktop for avant-garde layout
-          const offsetClass = idx === 1 ? "lg:translate-y-3" : idx === 2 ? "lg:-translate-y-2" : idx === 3 ? "lg:translate-y-2" : "";
 
           return (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`relative group px-4 py-3 sm:py-3.5 font-body text-[11px] sm:text-xs uppercase tracking-[0.25em] transition-all duration-300 cursor-pointer overflow-hidden text-left flex flex-col justify-between min-h-[70px] border ${
+              className={`relative group px-3.5 py-3 font-body text-[10px] sm:text-[11px] uppercase tracking-[0.2em] transition-all duration-300 cursor-pointer overflow-hidden text-left flex flex-col justify-between min-h-[60px] border rounded-xl ${
                 isActive
-                  ? "bg-[#0D0402] text-[#FAF7F2] border-[#0D0402] shadow-md"
-                  : "bg-transparent text-[#2C0102] border-[#0D0402]/20 hover:border-[#0D0402]"
-              } ${offsetClass}`}
+                  ? "bg-[#E5A93C] text-[#0D0402] border-[#E5A93C] shadow-md shadow-[#E5A93C]/20 font-bold"
+                  : "bg-[#FAF7F2]/5 text-[#FAF7F2]/80 border-[#FAF7F2]/10 hover:border-[#E5A93C]/50 hover:bg-[#FAF7F2]/10"
+              }`}
             >
-              <span className={`text-[9px] font-mono opacity-60 ${isActive ? "text-[#966A1E]" : "text-[#966A1E]"}`}>
+              <span className={`text-[8px] font-mono opacity-80 ${isActive ? "text-[#0D0402]" : "text-[#E5A93C]"}`}>
                 {cat.number}
               </span>
-              <span className="font-semibold tracking-wider relative z-10 truncate">{cat.name}</span>
+              <span className="tracking-wider relative z-10 truncate mt-1">{cat.name}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Compressed Master Menu Grid — No descriptions, clean ultra-minimal rows */}
-      <div className="px-6 sm:px-12 md:px-20 my-6 sm:my-8 z-10 max-w-6xl w-full mx-auto">
-        <div className="relative border-t border-b border-[#0D0402]/15 py-4 sm:py-6">
-          
-          <div className="flex items-center justify-between pb-3 mb-4 font-body text-[9px] uppercase tracking-[0.3em] text-[#966A1E] font-bold">
-            <span>Index · {currentCategoryData.name}</span>
-            <span>Rate (GBP)</span>
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCategory}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              style={{ willChange: "transform, opacity" }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-4 sm:gap-y-5 transform-gpu"
-            >
-              {currentCategoryData.items.map((item, idx) => (
-                <div
-                  key={item.id}
-                  className="group relative flex items-baseline justify-between border-b border-[#0D0402]/10 pb-3.5"
-                >
-                  <div className="flex items-baseline gap-3 pr-4 truncate">
-                    <span className="font-body text-[10px] text-[#966A1E] font-mono font-bold shrink-0">0{idx + 1}</span>
-                    <h3 className="font-heading italic font-bold text-lg sm:text-xl text-[#0D0402] truncate">
-                      {item.name}
-                    </h3>
-                    {item.badge && (
-                      <span className="text-[8px] uppercase tracking-widest px-1.5 py-0.5 bg-[#966A1E]/15 text-[#734E12] font-bold shrink-0 hidden sm:inline-block">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                  <span className="font-heading text-lg sm:text-xl text-[#0D0402] font-semibold shrink-0">
-                    {item.price}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-
-        </div>
+      {/* Strict 2-Column Grid Layout for Menu Items */}
+      <div className="max-w-4xl mx-auto relative z-10">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="grid grid-cols-2 gap-3 sm:gap-5"
+          >
+            {currentCategoryData.items.map((item, index) => (
+              <MenuCard
+                key={item.id}
+                item={item}
+                index={index}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
-
-      {/* Bottom Action Bar — Compact */}
-      <div className="px-6 sm:px-12 md:px-20 z-10 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#0D0402]/15 font-body text-[11px] uppercase tracking-[0.25em]">
-        <span className="text-[#2C201C] font-medium">100% Zabiha Halal &amp; Authentic Prep</span>
-        <MagneticButton
-          onClick={() => alert("Opening reservation gateway...")}
-          className="w-full sm:w-auto px-6 py-3 bg-[#0D0402] text-[#FAF7F2] font-bold rounded-none cursor-pointer transition-transform duration-300 hover:scale-105 shadow-md text-center"
-        >
-          Reserve Dastarkhwan
-        </MagneticButton>
-      </div>
-    </StackSection>
+    </section>
   );
 }
