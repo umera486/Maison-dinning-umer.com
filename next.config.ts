@@ -22,6 +22,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  // /private-dining and /shahi-reserve were built around services the kitchen
+  // doesn't sell (a fine-dining nihari "vigil" and an allocation-only
+  // ingredient vault). They're gone, but anything already linking to them
+  // should land somewhere useful rather than on a 404.
+  async redirects() {
+    return [
+      { source: "/private-dining", destination: "/catering", permanent: true },
+      { source: "/shahi-reserve", destination: "/menu", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

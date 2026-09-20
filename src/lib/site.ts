@@ -170,12 +170,12 @@ export const routes = {
  * Only routes that actually exist belong here. The previous navigation linked
  * "The Menu" to /private-dining and pointed four footer links at anchors
  * (#menu, #pre-order, #story, #dispatch) that were never in the document.
- *
- * `/reserve` and `/catering` join this list when those pages are built.
  */
 export const navLinks = [
   { title: "Menu", href: routes.menu },
   { title: "Our Story", href: routes.heritage },
+  { title: "Catering", href: routes.catering },
+  { title: "Book a Table", href: routes.reserve },
   { title: "Find Us", href: routes.contact },
 ] as const;
 

@@ -28,6 +28,14 @@ export function getSignatureDishes(): Dish[] {
   return getAllDishes().filter((d) => d.tags?.includes("signature"));
 }
 
+/**
+ * Dishes built for a table rather than a person — platters, whole birds,
+ * large grills. These are what a catering enquiry actually starts from.
+ */
+export function getSharingDishes(): Dish[] {
+  return getAllDishes().filter((d) => d.tags?.includes("sharing"));
+}
+
 export function getDishCount(): number {
   return getAllDishes().length;
 }
