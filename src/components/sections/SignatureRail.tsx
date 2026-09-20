@@ -1,178 +1,163 @@
 // src/components/sections/SignatureRail.tsx
 "use client";
 
-import { useCallback, useRef, useState, useEffect } from "react";
-import SmartImage from "@/components/shared/SmartImage";
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import SmartImage from "@/components/shared/SmartImage";
 import { getSignatureDishes, formatPrice } from "@/lib/menu";
 import { routes } from "@/lib/site";
 import { fadeUp, inView, EASE_LAHORI } from "@/lib/motion";
 
 /**
- * The kitchen's signatures, as a horizontal rail.
+ * The kitchen's signatures, as an editorial index.
  *
- * Deliberately a different interaction from /menu (which is vertical
- * typographic rows) so the two never feel like the same section twice — the
- * failure mode of the old homepage, where three consecutive sections were all
- * the same flip card and Mutton Karahi appeared in all three.
+ * Replaces a horizontal rail of rounded photo-cards. A card carousel is the
+ * most template-looking component on a restaurant site: every item is the
+ * same rounded rectangle, and the photography does all the work.
  *
- * Scrolling is native CSS scroll-snap: no scroll listener, no JS per frame,
- * and momentum behaves correctly on iOS. The arrows are a desktop affordance
- * layered on top, not the mechanism.
+ * Here the *type* does the work. Rows are hairline-separated, names are set
+ * large, and the photograph is revealed in a single fixed frame as you move
+ * down the list — one image on screen at a time, at size, rather than nine
+ * thumbnails competing for attention.
+ *
+ * Mobile keeps a thumbnail per row instead: hover-to-reveal is meaningless on
+ * touch, and a sticky image panel would eat the screen.
  */
 
 export default function SignatureRail() {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
-
-  // Only signatures we actually have a photograph for — a card with a missing
-  // image is worse than one fewer card.
   const dishes = getSignatureDishes().filter((d) => d.image);
-
-  const updateEdges = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    setAtStart(el.scrollLeft <= 4);
-    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
-  }, []);
-
-  useEffect(() => {
-    updateEdges();
-  }, [updateEdges]);
-
-  const nudge = useCallback((direction: 1 | -1) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    // Advance by roughly one card plus its gap.
-    const step = Math.min(el.clientWidth * 0.8, 340);
-    el.scrollBy({ left: step * direction, behavior: "smooth" });
-  }, []);
+  const [active, setActive] = useState(0);
 
   return (
-    <section className="relative w-full bg-brand-base py-16 sm:py-24 overflow-hidden">
-      <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={inView}
-        className="px-5 sm:px-8 lg:px-14 mb-8 sm:mb-11"
-      >
-        <div className="flex items-end justify-between gap-6 max-w-[1500px] mx-auto">
-          <div>
-            <p className="font-body text-[10px] uppercase tracking-[0.3em] text-brand-accent mb-3">
-              What people come back for
-            </p>
-            <h2 className="font-heading italic font-light text-[clamp(2rem,7vw,3.75rem)] leading-[1.02] text-brand-surface text-balance max-w-[14ch]">
-              The ones we&rsquo;re known for.
-            </h2>
-          </div>
+    <section className="relative bg-brand-base py-20 sm:py-28 lg:py-36">
+      <div className="px-5 sm:px-10 lg:px-16 max-w-[1600px] mx-auto">
+        {/* Section head — monospace metadata rather than the gold uppercase
+            label that was repeated in every other section. */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="flex items-baseline justify-between gap-6 border-b border-brand-surface/15 pb-5 mb-12 sm:mb-16"
+        >
+          <h2 className="font-heading italic font-light text-[clamp(2rem,7vw,4.5rem)] leading-[0.95] tracking-[-0.02em] text-brand-surface">
+            Signatures
+          </h2>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-muted shrink-0 tabular-nums">
+            {String(dishes.length).padStart(2, "0")} dishes
+          </span>
+        </motion.div>
 
-          {/* Arrows are supplementary — the rail is fully usable by swipe and
-              keyboard without them, so they're hidden where they'd crowd. */}
-          <div className="hidden md:flex items-center gap-2 shrink-0 pb-2">
-            <button
-              onClick={() => nudge(-1)}
-              disabled={atStart}
-              aria-label="Previous dishes"
-              className="w-11 h-11 rounded-full border border-brand-surface/20 flex items-center justify-center
-                text-brand-surface/80 hover:text-brand-accent hover:border-brand-accent/45
-                disabled:opacity-25 disabled:pointer-events-none transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-4 h-4" strokeWidth={1.8} />
-            </button>
-            <button
-              onClick={() => nudge(1)}
-              disabled={atEnd}
-              aria-label="More dishes"
-              className="w-11 h-11 rounded-full border border-brand-surface/20 flex items-center justify-center
-                text-brand-surface/80 hover:text-brand-accent hover:border-brand-accent/45
-                disabled:opacity-25 disabled:pointer-events-none transition-colors cursor-pointer"
-            >
-              <ArrowRight className="w-4 h-4" strokeWidth={1.8} />
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      <div
-        ref={scrollerRef}
-        onScroll={updateEdges}
-        // Lenis would otherwise capture this gesture and scroll the page.
-        data-lenis-prevent
-        className="flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory
-          px-5 sm:px-8 lg:px-14 pb-4
-          [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {dishes.map((dish, i) => (
-          <motion.article
-            key={dish.id}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.6, ease: EASE_LAHORI, delay: Math.min(i * 0.05, 0.3) }}
-            className="group relative shrink-0 snap-start
-              w-[74vw] xs:w-[68vw] sm:w-[320px] lg:w-[360px]
-              aspect-[3/4] rounded-2xl overflow-hidden bg-brand-raise border border-brand-surface/10"
-          >
-            <SmartImage
-              src={dish.image as string}
-              alt={dish.name}
-              fill
-              sizes="(min-width: 1024px) 360px, (min-width: 640px) 320px, 74vw"
-              quality={75}
-              preload={i === 0}
-              loading={i === 0 ? undefined : "lazy"}
-              className="object-cover transition-transform duration-[900ms] ease-lahori
-                group-hover:scale-[1.06] transform-gpu"
-            />
-
-            {/* Static gradient rather than an animated filter — legibility
-                without a per-frame cost. */}
-            <div className="absolute inset-0 bg-linear-to-t from-brand-base via-brand-base/35 to-transparent" />
-
-            <div className="absolute inset-0 flex flex-col justify-end p-5">
-              <h3 className="font-heading italic font-light text-2xl sm:text-[26px] leading-tight text-brand-surface text-over-image">
-                {dish.name}
-              </h3>
-
-              {dish.description && (
-                <p className="mt-1.5 font-body text-[12px] leading-relaxed text-brand-surface/70 line-clamp-2">
-                  {dish.description}
-                </p>
-              )}
-
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <span className="font-heading italic text-xl text-brand-accent tabular-nums">
-                  {formatPrice(dish)}
-                </span>
-                {dish.priceNote && (
-                  <span className="font-body text-[9.5px] uppercase tracking-[0.14em] text-brand-surface/50 text-right">
-                    {dish.priceNote}
+        <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16 xl:gap-24">
+          {/* ---------- Index ---------- */}
+          <ul className="border-t border-brand-surface/12">
+            {dishes.map((dish, i) => (
+              <motion.li
+                key={dish.id}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={inView}
+                transition={{ duration: 0.55, ease: EASE_LAHORI, delay: Math.min(i * 0.05, 0.3) }}
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                className="group border-b border-brand-surface/12"
+              >
+                <Link href={routes.menu} className="relative flex items-center gap-4 sm:gap-6 py-5 sm:py-6">
+                  <span className="font-mono text-[10px] text-brand-muted tabular-nums shrink-0 w-6 pt-1.5">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                )}
+
+                  {/* Mobile thumbnail. Hidden on desktop, where the large
+                      frame on the right does this job. */}
+                  <span className="lg:hidden relative w-14 h-14 shrink-0 overflow-hidden">
+                    <SmartImage
+                      src={dish.image as string}
+                      alt=""
+                      label={dish.name}
+                      fill
+                      sizes="56px"
+                      quality={60}
+                      loading="lazy"
+                      className="object-cover"
+                    />
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-heading italic font-light text-brand-surface
+                      text-[clamp(1.3rem,4.5vw,2.5rem)] leading-[1.1] tracking-[-0.01em]
+                      transition-colors duration-400 group-hover:text-brand-accent">
+                      {dish.name}
+                    </span>
+                    {dish.description && (
+                      <span className="hidden sm:block mt-1.5 font-body text-[12.5px] text-brand-muted line-clamp-1">
+                        {dish.description}
+                      </span>
+                    )}
+                  </span>
+
+                  <span className="font-heading italic text-lg sm:text-2xl text-brand-accent tabular-nums shrink-0">
+                    {formatPrice(dish)}
+                  </span>
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
+
+          {/* ---------- Reveal frame (desktop) ---------- */}
+          <div className="hidden lg:block">
+            <div className="sticky top-28">
+              <div className="relative aspect-4/5 overflow-hidden bg-brand-raise">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={dishes[active]?.id ?? "none"}
+                    initial={{ opacity: 0, scale: 1.04 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.55, ease: EASE_LAHORI }}
+                    className="absolute inset-0 transform-gpu"
+                  >
+                    <SmartImage
+                      src={dishes[active]?.image as string}
+                      alt={dishes[active]?.name ?? ""}
+                      label={dishes[active]?.name}
+                      fill
+                      sizes="(min-width: 1024px) 40vw, 100vw"
+                      quality={75}
+                      className="object-cover"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              <div className="flex items-baseline justify-between gap-4 pt-4 mt-4 border-t border-brand-surface/15">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand-muted tabular-nums">
+                  {String(active + 1).padStart(2, "0")} / {String(dishes.length).padStart(2, "0")}
+                </span>
+                <span className="font-body text-[11px] uppercase tracking-[0.16em] text-brand-surface/70 text-right">
+                  {dishes[active]?.name}
+                </span>
               </div>
             </div>
-          </motion.article>
-        ))}
+          </div>
+        </div>
 
-        {/* Terminal card: turns the end of the rail into a route to the menu
-            instead of a dead stop. */}
-        <Link
-          href={routes.menu}
-          className="group shrink-0 snap-start w-[58vw] sm:w-[240px] aspect-[3/4] rounded-2xl
-            border border-brand-accent/30 bg-brand-accent/[0.06] flex flex-col items-center justify-center gap-4
-            text-brand-accent hover:bg-brand-accent hover:text-brand-base transition-colors duration-400"
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="mt-12 sm:mt-16"
         >
-          <span className="font-heading italic text-2xl text-center px-5 leading-tight">
-            See all
-            <br />
-            the dishes
-          </span>
-          <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1.5" strokeWidth={1.6} />
-        </Link>
+          <Link
+            href={routes.menu}
+            className="group inline-flex items-baseline gap-4 font-heading italic
+              text-2xl sm:text-4xl text-brand-surface hover:text-brand-accent transition-colors duration-300"
+          >
+            <span className="font-mono not-italic text-[10px] tracking-[0.2em] text-brand-accent">→</span>
+            All 98 dishes
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
