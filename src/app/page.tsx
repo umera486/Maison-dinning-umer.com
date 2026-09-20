@@ -35,19 +35,18 @@ export default function Home() {
       <Navbar />
 
       <main className="relative bg-brand-base text-brand-surface">
-        {/* Two pinned panels. Sticky + z-index only — no per-frame scale or
-            filter work, which is what made this cheap enough to keep. */}
+        {/* The hero is the only sticky panel now. Disciplines pins itself via
+            ScrollTrigger for its horizontal run, and a GSAP pin nested inside
+            a CSS-sticky ancestor fights for the same scroll range — the pin
+            ends up measuring against the sticky element rather than the page. */}
         <StackSection index={0}>
           <HeroText />
         </StackSection>
 
-        <StackSection index={1}>
-          <Disciplines />
-        </StackSection>
-
-        {/* Normal flow from here. `relative z-10` lifts these above the pinned
-            panels so they scroll over the top of them rather than under. */}
+        {/* `relative z-10` lifts everything below over the sticky hero so it
+            scrolls across the top of it rather than underneath. */}
         <div className="relative z-10 bg-brand-base">
+          <Disciplines />
           <SignatureRail />
           <PriceStatement />
           <StoryTeaser />

@@ -1,5 +1,6 @@
+import { img } from "@/data/images";
 import type { Metadata } from "next";
-import Image from "next/image";
+import SmartImage from "@/components/shared/SmartImage";
 import { MapPin, Car, Clock, ShieldCheck } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -25,8 +26,8 @@ export default function ReservePage() {
       <main className="relative bg-brand-base text-brand-surface">
         {/* ---------- Hero band ---------- */}
         <section className="relative h-[46dvh] min-h-[280px] sm:min-h-[340px] overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1800&auto=format&fit=crop"
+          <SmartImage
+            src={img.room}
             alt={`The dining room at ${site.name}`}
             fill
             sizes="100vw"

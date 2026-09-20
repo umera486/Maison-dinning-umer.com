@@ -2,8 +2,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import SmartImage from "@/components/shared/SmartImage";
+import { img } from "@/data/images";
 import { motion, type Variants } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -43,23 +44,17 @@ const petalVariants: Variants = {
   }),
 };
 
-/** The three things the flyer leads with, as the three petals. */
+/**
+ * The three things the flyer leads with, as the three petals.
+ *
+ * Sources come from the shared verified set — the centre petal previously
+ * pointed at an Unsplash ID that had 404'd, so the hero's largest image was
+ * rendering as an empty card.
+ */
 const petals = [
-  {
-    label: "Live Charcoal BBQ",
-    src: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=800&auto=format&fit=crop",
-    sizes: "(min-width: 768px) 280px, 150px",
-  },
-  {
-    label: "Karahi & Wok",
-    src: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop",
-    sizes: "(min-width: 768px) 280px, 150px",
-  },
-  {
-    label: "Nihari & Paye",
-    src: "https://images.unsplash.com/photo-1585932702519-f21cc028cb0c?q=80&w=800&auto=format&fit=crop",
-    sizes: "(min-width: 768px) 320px, 170px",
-  },
+  { label: "Live Charcoal BBQ", src: img.charcoal, sizes: "(min-width: 768px) 280px, 150px" },
+  { label: "Karahi & Wok", src: img.karahi, sizes: "(min-width: 768px) 280px, 150px" },
+  { label: "Nihari & Paye", src: img.curry, sizes: "(min-width: 768px) 320px, 170px" },
 ] as const;
 
 export default function HeroText() {
@@ -181,9 +176,10 @@ export default function HeroText() {
                 transition={floatTransition(delay, duration)}
                 className="relative w-full h-full transform-gpu"
               >
-                <Image
+                <SmartImage
                   src={petal.src}
                   alt={petal.label}
+                  label={petal.label}
                   fill
                   sizes={petal.sizes}
                   quality={75}

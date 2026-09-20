@@ -16,6 +16,8 @@
  * own photography. Every image lives in exactly one place so the swap is cheap.
  */
 
+import { img } from "@/data/images";
+
 export type DishTag = "veg" | "signature" | "sharing" | "breakfast" | "spicy";
 
 export interface Dish {
@@ -46,20 +48,28 @@ export interface MenuCategory {
   items: Dish[];
 }
 
+/**
+ * Photography comes from the single verified set in `data/images.ts`.
+ *
+ * These were previously inline Unsplash URLs, three of which had rotted to
+ * 404 — the nihari, wraps and naan images were simply missing on the live
+ * site. Centralising them means a dead URL is fixed once, and `SmartImage`
+ * renders a designed fallback instead of an empty box if one dies again.
+ */
 const IMG = {
-  bbq: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1400&auto=format&fit=crop",
-  karahi: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=1400&auto=format&fit=crop",
-  tawa: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?q=80&w=1400&auto=format&fit=crop",
-  nihari: "https://images.unsplash.com/photo-1585932702519-f21cc028cb0c?q=80&w=1400&auto=format&fit=crop",
-  biryani: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=1400&auto=format&fit=crop",
-  naan: "https://images.unsplash.com/photo-1626777553626-0604131584d4?q=80&w=1400&auto=format&fit=crop",
-  veg: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=1400&auto=format&fit=crop",
-  dessert: "https://images.unsplash.com/photo-1585932702519-f21cc028cb0c?q=80&w=1400&auto=format&fit=crop",
-  drinks: "https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=1400&auto=format&fit=crop",
-  wraps: "https://images.unsplash.com/photo-1599487488170-ded1ec92642f?q=80&w=1400&auto=format&fit=crop",
-  chicken: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=1400&auto=format&fit=crop",
-  nashta: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88?q=80&w=1400&auto=format&fit=crop",
-  peri: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1400&auto=format&fit=crop",
+  bbq: img.grill,
+  karahi: img.karahi,
+  tawa: img.tawa,
+  nihari: img.curry,
+  biryani: img.karahi,
+  naan: img.spread,
+  veg: img.daal,
+  dessert: img.spread,
+  drinks: img.table,
+  wraps: img.tawa,
+  chicken: img.curry,
+  nashta: img.spread,
+  peri: img.charcoal,
 } as const;
 
 export const menu: MenuCategory[] = [

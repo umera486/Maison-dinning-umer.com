@@ -1,7 +1,8 @@
 // src/components/contact/ContactView.tsx
 "use client";
 
-import Image from "next/image";
+import { img } from "@/data/images";
+import SmartImage from "@/components/shared/SmartImage";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -166,8 +167,8 @@ export default function ContactView() {
             className="space-y-4"
           >
             <div className="relative aspect-4/3 rounded-2xl overflow-hidden border border-brand-surface/10">
-              <Image
-                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1400&auto=format&fit=crop"
+              <SmartImage
+                src={img.room}
                 alt={`${site.name}, ${site.address.line1}`}
                 fill
                 sizes="(min-width: 1024px) 700px, 100vw"

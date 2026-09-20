@@ -1,8 +1,9 @@
 // src/components/heritage/HeritageView.tsx
 "use client";
 
+import { img } from "@/data/images";
 import { useEffect, useRef } from "react";
-import Image from "next/image";
+import SmartImage from "@/components/shared/SmartImage";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import gsap from "gsap";
@@ -48,7 +49,7 @@ const chapters: Chapter[] = [
       "Lahori food grew up outdoors — in the lanes of the walled city, where a cook did one thing and did it for thirty years. A tawa. A karahi. A tandoor. No menu, no courses, no explanation.",
       "That is the discipline the kitchen keeps: a short list of dishes, each cooked by someone who has made it ten thousand times.",
     ],
-    image: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?q=80&w=1600&auto=format&fit=crop",
+    image: img.tawa,
     alt: "A cast-iron tawa at full heat",
     linkLabel: "Lahori Dynamite & street food",
     href: `${routes.menu}#lahori-dynamite`,
@@ -60,7 +61,7 @@ const chapters: Chapter[] = [
       "Nihari is not a dish you decide to make at lunchtime. Shank goes into the pot as the kitchen closes, over a low flame, and stays there until the collagen gives up and the gravy turns near-black.",
       "Paye and haleem work the same way — slow, patient, unhurried. You cannot rush them, and there is no shortcut that tastes the same.",
     ],
-    image: "https://images.unsplash.com/photo-1585932702519-f21cc028cb0c?q=80&w=1600&auto=format&fit=crop",
+    image: img.curry,
     alt: "Nihari, finished with ginger and green chilli",
     linkLabel: "Nihari, paye & haleem",
     href: `${routes.menu}#specials`,
@@ -72,7 +73,7 @@ const chapters: Chapter[] = [
       "Charcoal is harder than gas. It is inconsistent, it needs watching, and it takes someone standing over it. It is also the only thing that puts that particular char on a seekh kabab or a lamb chop.",
       "Karahi is the same argument in a wok — finished to order, tomato and ginger and crushed pepper, never ladled out of something made that morning.",
     ],
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop",
+    image: img.grill,
     alt: "Skewers over live charcoal",
     linkLabel: "The charcoal grill",
     href: `${routes.menu}#starters-non-veg`,
@@ -84,7 +85,7 @@ const chapters: Chapter[] = [
       "In Lahore, nashta is not toast. It is halwa puri on a Sunday, paratha and eggs, a bowl of choolay — eaten early, eaten properly, and eaten with everyone.",
       "It travelled to London intact, which is why it is on the menu at all.",
     ],
-    image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88?q=80&w=1600&auto=format&fit=crop",
+    image: img.spread,
     alt: "Halwa puri laid out for breakfast",
     linkLabel: "Lahori nashta",
     href: `${routes.menu}#nashta`,
@@ -143,7 +144,7 @@ function ChapterBlock({ chapter, index }: { chapter: Chapter; index: number }) {
         >
           <div className="relative aspect-4/3 sm:aspect-16/11 lg:aspect-4/5 rounded-2xl overflow-hidden border border-brand-surface/10">
             <div ref={imageRef} className="absolute inset-0 -top-[14%] h-[128%] transform-gpu">
-              <Image
+              <SmartImage
                 src={chapter.image}
                 alt={chapter.alt}
                 fill
@@ -246,8 +247,8 @@ export default function HeritageView() {
       {/* ---------- Hero ---------- */}
       <section ref={heroRef} className="relative h-[82dvh] min-h-[500px] overflow-hidden">
         <div ref={heroImageRef} className="absolute inset-0 -top-[10%] h-[120%] transform-gpu">
-          <Image
-            src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1800&auto=format&fit=crop"
+          <SmartImage
+            src={img.charcoal}
             alt="The tandoor at working heat"
             fill
             sizes="100vw"

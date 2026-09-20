@@ -2,7 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
+import SmartImage from "@/components/shared/SmartImage";
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -206,7 +206,7 @@ function CategorySection({
         className="relative h-[168px] sm:h-[230px] lg:h-[280px] overflow-hidden rounded-2xl"
       >
         <div ref={imageRef} className="absolute inset-0 -top-[18%] h-[136%] transform-gpu">
-          <Image
+          <SmartImage
             src={category.image}
             alt=""
             fill

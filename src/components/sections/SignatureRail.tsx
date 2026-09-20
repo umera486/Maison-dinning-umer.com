@@ -2,7 +2,7 @@
 "use client";
 
 import { useCallback, useRef, useState, useEffect } from "react";
-import Image from "next/image";
+import SmartImage from "@/components/shared/SmartImage";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -117,7 +117,7 @@ export default function SignatureRail() {
               w-[74vw] xs:w-[68vw] sm:w-[320px] lg:w-[360px]
               aspect-[3/4] rounded-2xl overflow-hidden bg-brand-raise border border-brand-surface/10"
           >
-            <Image
+            <SmartImage
               src={dish.image as string}
               alt={dish.name}
               fill

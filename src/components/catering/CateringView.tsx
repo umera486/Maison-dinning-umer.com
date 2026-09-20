@@ -1,8 +1,9 @@
 // src/components/catering/CateringView.tsx
 "use client";
 
+import { img } from "@/data/images";
 import { useEffect, useRef } from "react";
-import Image from "next/image";
+import SmartImage from "@/components/shared/SmartImage";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -93,8 +94,8 @@ export default function CateringView() {
       {/* ---------- Hero ---------- */}
       <section ref={heroRef} className="relative h-[78dvh] min-h-[480px] overflow-hidden">
         <div ref={heroImageRef} className="absolute inset-0 -top-[12%] h-[124%] transform-gpu">
-          <Image
-            src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1800&auto=format&fit=crop"
+          <SmartImage
+            src={img.grill}
             alt="A mixed grill built for a table"
             fill
             sizes="100vw"
@@ -201,7 +202,7 @@ export default function CateringView() {
               >
                 {dish.image && (
                   <div className="relative aspect-16/10 overflow-hidden">
-                    <Image
+                    <SmartImage
                       src={dish.image}
                       alt={dish.name}
                       fill

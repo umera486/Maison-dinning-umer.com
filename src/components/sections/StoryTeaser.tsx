@@ -1,8 +1,9 @@
 // src/components/sections/StoryTeaser.tsx
 "use client";
 
+import { img } from "@/data/images";
 import { useEffect, useRef } from "react";
-import Image from "next/image";
+import SmartImage from "@/components/shared/SmartImage";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import gsap from "gsap";
@@ -72,8 +73,8 @@ export default function StoryTeaser() {
           {/* Parallax image */}
           <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] rounded-2xl overflow-hidden order-1 lg:order-none border border-brand-surface/10">
             <div ref={imageRef} className="absolute inset-0 -top-[16%] h-[132%] transform-gpu">
-              <Image
-                src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1400&auto=format&fit=crop"
+              <SmartImage
+                src={img.charcoal}
                 alt="The charcoal grill at work"
                 fill
                 sizes="(min-width: 1024px) 620px, 100vw"
