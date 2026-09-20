@@ -209,7 +209,7 @@ export default function CateringView() {
                       sizes="(min-width: 1024px) 420px, (min-width: 640px) 50vw, 100vw"
                       quality={75}
                       loading="lazy"
-                      className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 transform-gpu"
+                      className="object-cover transition-transform duration-[900ms] ease-lahori group-hover:scale-105 transform-gpu"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-brand-base/85 to-transparent" />
                   </div>

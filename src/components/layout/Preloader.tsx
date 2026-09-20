@@ -4,42 +4,43 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Logo from "@/components/brand/Logo";
-import Embers from "@/components/fx/Embers";
 import { site } from "@/lib/site";
 import { EASE_SEAL, EASE_LAHORI } from "@/lib/motion";
 
 /**
  * The intro.
  *
- * A self-contained overlay that does NOT gate the page. The previous version
- * lived in `page.tsx` as `{isLoaded && <everything/>}`, so the whole site was
- * absent from the server HTML until a 3.2s client timer fired — the homepage
- * shipped 20KB of markup while /menu shipped 222KB.
+ * Sequence: the badge scales in, the green ring traces itself, a counter runs
+ * to 100, then the entire overlay collapses INTO the logo's circle — the site
+ * is revealed from the outside in and the curtain disappears through the mark
+ * itself.
  *
- * Now the page renders underneath and this floats on top:
- *  - the HTML is complete and indexable
- *  - it plays once per session, not on every navigation
- *  - a tap, scroll or key press dismisses it
- *  - reduced-motion users skip it entirely
+ * Performance notes, because this runs at the worst possible moment (first
+ * paint, cold cache):
+ *  - The exit is a single `clip-path: circle()` interpolation. Clip-path on a
+ *    composited layer is GPU work, not layout or paint.
+ *  - No canvas here. The previous version ran the ember particle system during
+ *    load, competing with the hero's LCP image for main-thread time.
+ *  - No blend modes and no backdrop-filter anywhere in this tree.
+ *  - The counter is one state update per ~40ms, not per frame.
  *
- * The sequence: the green ring traces itself, the skyline rises out of the
- * baseline, the wordmark clears, a gold sweep crosses the lot, then the whole
- * thing splits and lifts. Everything is transform/opacity or an SVG
- * stroke-dashoffset, so it stays on the compositor.
+ * It does NOT gate the page: the site renders underneath and this floats on
+ * top, so the HTML is complete and indexable. Plays once per session,
+ * dismissable by tap/scroll/key, skipped entirely under reduced motion.
  */
 
 const SESSION_KEY = "lw-intro-seen";
-const HOLD_MS = 2600;
+const HOLD_MS = 2300;
 
 // Circumference of the r=93 ring in the logo's 200×200 viewBox.
 const RING_LENGTH = 2 * Math.PI * 93;
 
 export default function Preloader() {
-  // Starts true so the overlay is in the server HTML and there's no flash of
-  // content before hydration. The effect removes it within a frame for anyone
-  // who has already seen it.
+  // Starts true so the overlay is in the server HTML — no flash of content
+  // before hydration. Removed within a frame for anyone who's seen it.
   const [visible, setVisible] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const [count, setCount] = useState(0);
   const reduceMotion = useReducedMotion() ?? false;
 
   const dismiss = useCallback(() => setVisible(false), []);
@@ -49,7 +50,7 @@ export default function Preloader() {
     try {
       seen = sessionStorage.getItem(SESSION_KEY) === "1";
     } catch {
-      // Private mode / blocked storage — treat as unseen and play it.
+      // Private mode / blocked storage — treat as unseen.
     }
 
     if (seen || reduceMotion) {
@@ -64,12 +65,20 @@ export default function Preloader() {
       /* non-fatal */
     }
 
+    const started = performance.now();
+    const counter = setInterval(() => {
+      const progress = Math.min(1, (performance.now() - started) / (HOLD_MS - 400));
+      setCount(Math.round(progress * 100));
+      if (progress >= 1) clearInterval(counter);
+    }, 40);
+
     const timer = setTimeout(dismiss, HOLD_MS);
     window.addEventListener("wheel", dismiss, { passive: true, once: true });
     window.addEventListener("touchstart", dismiss, { passive: true, once: true });
     window.addEventListener("keydown", dismiss, { once: true });
 
     return () => {
+      clearInterval(counter);
       clearTimeout(timer);
       window.removeEventListener("wheel", dismiss);
       window.removeEventListener("touchstart", dismiss);
@@ -93,77 +102,63 @@ export default function Preloader() {
           key="preloader"
           onClick={dismiss}
           aria-hidden
-          exit={{ opacity: 0, transition: { duration: 0.5, ease: "linear", delay: 0.55 } }}
-          className="fixed inset-0 z-999 overflow-hidden bg-brand-base"
+          // The whole curtain collapses into the badge. `circle(0%)` at centre
+          // is the logo's position, so the overlay vanishes through the mark.
+          initial={{ clipPath: "circle(145% at 50% 50%)" }}
+          exit={{
+            clipPath: "circle(0% at 50% 50%)",
+            transition: { duration: 1, ease: EASE_SEAL },
+          }}
+          className="fixed inset-0 z-999 flex flex-col items-center justify-center bg-brand-base px-6"
         >
-          {/* Two halves that part like doors on exit. */}
-          {[0, 1].map((half) => (
-            <motion.div
-              key={half}
-              initial={{ y: "0%" }}
-              exit={{ y: half === 0 ? "-102%" : "102%" }}
-              transition={{ duration: 0.85, ease: EASE_SEAL, delay: 0.1 }}
-              className="absolute inset-x-0 h-1/2 bg-brand-base transform-gpu"
-              style={{ top: half === 0 ? 0 : "50%" }}
-            />
-          ))}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_110%,rgba(229,169,60,0.14),transparent_60%)]" />
 
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_115%,rgba(229,169,60,0.16),transparent_62%)]" />
-          <Embers />
+          {/* Badge grows slightly as the curtain closes around it, so the
+              collapse reads as the mark swallowing the screen. */}
+          <motion.div
+            exit={{ scale: 1.12, opacity: 0, transition: { duration: 0.8, ease: EASE_SEAL } }}
+            className="relative w-[190px] sm:w-[250px] aspect-square transform-gpu"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.88 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: EASE_LAHORI, delay: 0.15 }}
+              className="absolute inset-0 transform-gpu"
+            >
+              <Logo className="w-full h-full" tone="brand" withWordmark={false} />
+            </motion.div>
+
+            {/* The ring writes itself around the badge. */}
+            <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full -rotate-90">
+              <motion.circle
+                cx="100"
+                cy="100"
+                r="93"
+                fill="none"
+                stroke="#15803d"
+                strokeWidth="2.8"
+                strokeLinecap="round"
+                strokeDasharray={RING_LENGTH}
+                initial={{ strokeDashoffset: RING_LENGTH }}
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 1.7, ease: EASE_LAHORI, delay: 0.1 }}
+              />
+            </svg>
+          </motion.div>
 
           <motion.div
-            exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.4, ease: EASE_LAHORI } }}
-            className="relative h-full w-full flex flex-col items-center justify-center px-6"
+            exit={{ opacity: 0, y: -14, transition: { duration: 0.4 } }}
+            className="relative mt-8 flex flex-col items-center transform-gpu"
           >
-            <div className="relative w-[210px] sm:w-[280px] aspect-square">
-              {/* The mark, revealed in layers */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, ease: EASE_LAHORI, delay: 0.25 }}
-                className="absolute inset-0 transform-gpu"
-              >
-                <Logo className="w-full h-full" tone="brand" withWordmark={false} />
-              </motion.div>
-
-              {/* The ring, traced. Drawn on top of the logo's own ring so the
-                  stroke appears to write itself around the badge. */}
-              <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full -rotate-90">
-                <motion.circle
-                  cx="100"
-                  cy="100"
-                  r="93"
-                  fill="none"
-                  stroke="#15803d"
-                  strokeWidth="2.6"
-                  strokeLinecap="round"
-                  strokeDasharray={RING_LENGTH}
-                  initial={{ strokeDashoffset: RING_LENGTH }}
-                  animate={{ strokeDashoffset: 0 }}
-                  transition={{ duration: 1.5, ease: EASE_LAHORI }}
-                />
-              </svg>
-
-              {/* Gold sweep across the mark */}
-              <motion.div
-                initial={{ x: "-130%" }}
-                animate={{ x: "130%" }}
-                transition={{ duration: 1.1, ease: EASE_LAHORI, delay: 1.15 }}
-                className="absolute inset-y-0 w-1/2 -skew-x-12 pointer-events-none transform-gpu
-                  bg-linear-to-r from-transparent via-brand-accent/25 to-transparent"
-              />
-            </div>
-
-            {/* Wordmark, per-letter */}
-            <div className="mt-7 flex overflow-hidden">
+            <div className="flex overflow-hidden">
               {site.name.split("").map((char, i) => (
                 <motion.span
                   key={`${char}-${i}`}
                   initial={{ y: "110%" }}
                   animate={{ y: "0%" }}
-                  transition={{ duration: 0.7, ease: EASE_LAHORI, delay: 0.75 + i * 0.045 }}
+                  transition={{ duration: 0.7, ease: EASE_LAHORI, delay: 0.6 + i * 0.04 }}
                   className="inline-block font-heading text-brand-surface
-                    text-[clamp(1.5rem,7vw,2.75rem)] font-light tracking-[0.14em] transform-gpu"
+                    text-[clamp(1.4rem,6.5vw,2.5rem)] font-light tracking-[0.16em] transform-gpu"
                 >
                   {char}
                 </motion.span>
@@ -171,20 +166,19 @@ export default function Preloader() {
             </div>
 
             <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: HOLD_MS / 1000 - 0.5, ease: "linear", delay: 0.4 }}
-              className="mt-5 h-px w-32 sm:w-44 origin-left bg-brand-accent/60 transform-gpu"
-            />
-
-            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.35 }}
-              className="mt-5 font-body text-[9px] sm:text-[10px] uppercase tracking-[0.36em] text-brand-muted text-center"
+              transition={{ delay: 1.1, duration: 0.5 }}
+              className="mt-5 flex items-center gap-4"
             >
-              {site.tagline} · {site.branch}
-            </motion.p>
+              <span className="font-body text-[9px] uppercase tracking-[0.34em] text-brand-muted">
+                {site.tagline}
+              </span>
+              <span className="w-8 h-px bg-brand-accent/40" />
+              <span className="font-body text-[11px] tabular-nums text-brand-accent w-8 text-right">
+                {count}
+              </span>
+            </motion.div>
           </motion.div>
         </motion.div>
       )}

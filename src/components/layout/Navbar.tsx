@@ -85,7 +85,7 @@ function MagneticLink({ href, active, children }: { href: string; active: boolea
 
         <span
           className={`absolute inset-0 flex items-center justify-center font-body text-[10px] uppercase tracking-[0.18em]
-            whitespace-nowrap transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.76,0,0.24,1)]
+            whitespace-nowrap transition-[opacity,transform] duration-300 ease-seal
             transform-gpu group-hover:opacity-0 group-hover:scale-95
             ${active ? "text-brand-accent" : "text-brand-surface"}`}
         >
@@ -96,7 +96,7 @@ function MagneticLink({ href, active, children }: { href: string; active: boolea
           aria-hidden
           className="absolute inset-0 flex items-center justify-center font-heading italic text-sm text-brand-accent
             whitespace-nowrap opacity-0 scale-95 transition-[opacity,transform] duration-300
-            ease-[cubic-bezier(0.76,0,0.24,1)] transform-gpu group-hover:opacity-100 group-hover:scale-105"
+            ease-seal transform-gpu group-hover:opacity-100 group-hover:scale-105"
         >
           {children}
         </span>
@@ -416,7 +416,7 @@ export default function Navbar() {
                           <span className="font-body not-italic text-[9px] sm:text-[11px] text-brand-accent/70 tracking-[0.2em] shrink-0 tabular-nums">
                             0{i + 1}
                           </span>
-                          <span className="inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/item:translate-x-2 transform-gpu">
+                          <span className="inline-block transition-transform duration-500 ease-lahori group-hover/item:translate-x-2 transform-gpu">
                             {link.title}
                           </span>
                         </Link>

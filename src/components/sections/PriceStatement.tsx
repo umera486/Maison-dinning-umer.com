@@ -43,7 +43,7 @@ function PriceRow({ fact, index }: { fact: (typeof facts)[number]; index: number
       <span
         aria-hidden
         className="absolute -top-px left-0 h-px w-0 bg-brand-accent
-          transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:w-full"
+          transition-[width] duration-700 ease-lahori group-hover:w-full"
       />
 
       <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 sm:gap-10">

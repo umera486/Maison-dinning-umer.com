@@ -102,13 +102,16 @@ const MagneticButton = forwardRef<HTMLButtonElement, MagneticButtonProps>(
         <span
           aria-hidden
           className="absolute inset-0 -z-10 bg-current origin-center scale-x-0 group-hover:scale-x-100
-            transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu"
+            transition-transform duration-500 ease-lahori transform-gpu"
           style={{ willChange: "transform" }}
         />
 
+        {/* No mix-blend-mode: a blend forces the compositor to read whatever
+            is behind the button every frame it animates. Colour is handled by
+            the caller's hover classes instead. */}
         <span
           className="relative z-10 flex items-center justify-center gap-2.5 transition-colors duration-500
-            ease-[cubic-bezier(0.16,1,0.3,1)] mix-blend-difference"
+            ease-lahori"
         >
           {children}
         </span>

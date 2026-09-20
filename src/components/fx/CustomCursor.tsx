@@ -2,19 +2,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
 /**
- * A gold ring that trails the pointer and swells over anything interactive.
+ * A gold ring trailing the pointer, swelling over anything interactive.
  *
- * Rules that keep this from being the usual custom-cursor disaster:
- *  - The real cursor is never hidden. Hiding it and then failing to render a
- *    replacement (JS error, slow frame, dragged-out-of-window) leaves the
- *    visitor with no pointer at all. This rides alongside it.
- *  - Fine pointers only. A touch device gets nothing — no listeners, no rAF.
- *  - Position is written straight to `style.transform` inside one rAF loop.
- *    Routing this through React state would be a render per mousemove.
- *  - `mix-blend-difference` keeps it visible on both the dark base and the
- *    cream surfaces, without needing to know what's underneath.
+ * PERFORMANCE HISTORY — do not reintroduce `mix-blend-difference` here.
+ * A blend mode on a fixed element forces the compositor to read the backdrop
+ * behind it every frame, all the way down the scrolling page. It looked
+ * clever and cost real frames. A solid ring with a soft dark outline stays
+ * legible over both the dark base and cream surfaces without any blending.
+ *
+ * It also no longer runs its own requestAnimationFrame loop. It rides GSAP's
+ * ticker, which Lenis already drives — one loop for the whole site instead of
+ * four competing ones.
+ *
+ * Other rules that keep this from being the usual custom-cursor disaster:
+ *  - The real cursor is never hidden. If this fails to render, the visitor
+ *    still has a pointer.
+ *  - Fine pointers only. Touch devices get nothing: no listeners, no ticker.
  */
 
 const HOVER_SELECTOR = 'a, button, input, textarea, select, [role="button"], [data-cursor="hover"]';
@@ -29,62 +35,67 @@ export default function CustomCursor() {
     if (!fine.matches || reduce.matches) return;
 
     setEnabled(true);
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const ring = ringRef.current;
+    if (!ring) return;
 
     const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const current = { x: target.x, y: target.y };
     let scale = 1;
     let targetScale = 1;
-    let visible = false;
-    let frame: number | null = null;
+    let seen = false;
+
+    // quickSetter avoids re-parsing the style string on every frame.
+    const setX = gsap.quickSetter(ring, "x", "px");
+    const setY = gsap.quickSetter(ring, "y", "px");
+    const setScale = gsap.quickSetter(ring, "scale");
 
     const onMove = (e: MouseEvent) => {
       target.x = e.clientX;
       target.y = e.clientY;
-      if (!visible) {
-        visible = true;
-        // Jump on first sight rather than flying in from the centre.
+      if (!seen) {
+        seen = true;
         current.x = e.clientX;
         current.y = e.clientY;
-        if (ringRef.current) ringRef.current.style.opacity = "1";
+        ring.style.opacity = "1";
       }
     };
 
     const onOver = (e: MouseEvent) => {
       const el = e.target as Element | null;
-      targetScale = el?.closest?.(HOVER_SELECTOR) ? 2.1 : 1;
+      targetScale = el?.closest?.(HOVER_SELECTOR) ? 2 : 1;
     };
 
     const onLeave = () => {
-      visible = false;
-      if (ringRef.current) ringRef.current.style.opacity = "0";
+      seen = false;
+      ring.style.opacity = "0";
     };
 
-    const render = () => {
-      frame = requestAnimationFrame(render);
-      // Critically damped-ish follow: fast enough to feel attached, slow
-      // enough to read as a separate object.
+    const tick = () => {
+      // Fast enough to feel attached, slow enough to read as its own object.
       current.x += (target.x - current.x) * 0.18;
       current.y += (target.y - current.y) * 0.18;
       scale += (targetScale - scale) * 0.14;
-
-      const ring = ringRef.current;
-      if (ring) {
-        ring.style.transform = `translate3d(${current.x}px, ${current.y}px, 0) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
-      }
+      setX(current.x);
+      setY(current.y);
+      setScale(scale);
     };
 
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseover", onOver, { passive: true });
     document.addEventListener("mouseleave", onLeave);
-    frame = requestAnimationFrame(render);
+    gsap.ticker.add(tick);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseover", onOver);
       document.removeEventListener("mouseleave", onLeave);
-      if (frame !== null) cancelAnimationFrame(frame);
+      gsap.ticker.remove(tick);
     };
-  }, []);
+  }, [enabled]);
 
   if (!enabled) return null;
 
@@ -92,9 +103,9 @@ export default function CustomCursor() {
     <div
       ref={ringRef}
       aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-[250] w-8 h-8 rounded-full
-        border border-brand-accent opacity-0 mix-blend-difference
-        transition-opacity duration-300 will-change-transform"
+      className="pointer-events-none fixed left-0 top-0 z-250 w-9 h-9 -ml-4.5 -mt-4.5
+        rounded-full border border-brand-accent opacity-0 transition-opacity duration-300"
+      style={{ boxShadow: "0 0 0 1px rgba(8,8,10,0.35)" }}
     />
   );
 }

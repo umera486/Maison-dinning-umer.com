@@ -1,44 +1,49 @@
 // src/components/fx/GrainOverlay.tsx
 
 /**
- * Film grain + vignette, sitting above everything.
+ * Film grain + vignette.
  *
- * This is the cheapest premium signal available: photography stops looking
- * like stock and starts looking graded. One fixed element, one inline SVG
- * turbulence texture rasterised once by the browser, zero JavaScript, zero
- * per-frame work.
+ * PERFORMANCE HISTORY — do not reintroduce `mix-blend-mode` here.
  *
- * Deliberately NOT animated. Animated grain means re-rasterising a
- * full-viewport texture every frame, which is a guaranteed way to lose the
- * 55fps floor on a phone. Static grain reads as film; jittering grain reads
- * as a broken screen.
+ * This previously used `mix-blend-overlay` on a fixed, full-viewport element.
+ * A blend mode makes the compositor read the backdrop — i.e. the entire
+ * scrolling page beneath it — and re-blend the whole viewport on every single
+ * frame. It is one of the most expensive things you can put on a scrolling
+ * site, and it was the main cause of the jank. The earlier comment here
+ * claimed static grain was cheap; that was wrong. Static grain IS cheap. A
+ * blend mode is not, animated or otherwise.
  *
- * Server component — no "use client" needed.
+ * Plain alpha compositing over a dark base looks near-identical and costs one
+ * static layer that never repaints.
+ *
+ * `pointer-events-none` + `contain: strict` keep it out of hit-testing and
+ * isolate it from layout entirely.
+ *
+ * Server component — zero JavaScript.
  */
 export default function GrainOverlay() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[200]"
+      className="pointer-events-none fixed inset-0 z-200"
       style={{ contain: "strict" }}
     >
-      {/* Vignette: pulls the eye to the centre and hides the hard edges of
-          full-bleed photography. */}
+      {/* Vignette — pulls the eye inward and softens the edges of full-bleed
+          photography. One gradient, painted once. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 120% 80% at 50% 50%, transparent 40%, rgba(13,13,15,0.42) 100%)",
+            "radial-gradient(ellipse 125% 85% at 50% 50%, transparent 42%, rgba(8,8,10,0.5) 100%)",
         }}
       />
 
-      {/* Grain. `fractalNoise` at a high base frequency gives fine film grain;
-          a low opacity keeps it as texture rather than dirt. */}
+      {/* Grain. Normal compositing, low alpha. Reads as film on a dark base. */}
       <div
-        className="absolute inset-0 opacity-[0.16] mix-blend-overlay"
+        className="absolute inset-0 opacity-[0.055]"
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")",
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E\")",
           backgroundRepeat: "repeat",
         }}
       />

@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SmartImage from "@/components/shared/SmartImage";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Flame, Leaf, Users, Sunrise, Star } from "lucide-react";
@@ -64,21 +64,25 @@ function TagPips({ tags }: { tags?: DishTag[] }) {
  * A row is one flex container and reads like an actual menu.
  * ------------------------------------------------------------------ */
 
-function DishRow({ dish, index }: { dish: Dish; index: number }) {
-  const reduceMotion = useReducedMotion() ?? false;
+/**
+ * Row reveal is driven by a variant inherited from the category's <ul>, not by
+ * its own `whileInView`.
+ *
+ * Every `whileInView` creates an IntersectionObserver. With 98 dishes that was
+ * 98 observers plus 98 independently-scheduled transitions on one page, all
+ * registered during mount. Inheriting from one parent variant means one
+ * observer per category — 15 instead of 98 — and the stagger is handled by the
+ * parent for free.
+ */
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_LAHORI } },
+};
 
+function DishRow({ dish }: { dish: Dish }) {
   return (
     <motion.li
-      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.4 }}
-      transition={{
-        duration: 0.5,
-        ease: EASE_LAHORI,
-        // Cap the stagger so long categories don't leave the last rows
-        // waiting seconds to appear.
-        delay: Math.min(index * 0.035, 0.28),
-      }}
+      variants={rowVariants}
       className="group relative border-b border-brand-surface/[0.09] last:border-b-0"
     >
       <div className="flex items-baseline gap-3 py-4 sm:py-[18px]">
@@ -253,11 +257,17 @@ function CategorySection({
         </p>
       )}
 
-      <ul className="mt-2 sm:mt-3">
-        {category.items.map((dish, i) => (
-          <DishRow key={dish.id} dish={dish} index={i} />
+      <motion.ul
+        variants={stagger(0.03)}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.05 }}
+        className="mt-2 sm:mt-3"
+      >
+        {category.items.map((dish) => (
+          <DishRow key={dish.id} dish={dish} />
         ))}
-      </ul>
+      </motion.ul>
     </section>
   );
 }

@@ -125,7 +125,7 @@ export default function SignatureRail() {
               quality={75}
               preload={i === 0}
               loading={i === 0 ? undefined : "lazy"}
-              className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]
+              className="object-cover transition-transform duration-[900ms] ease-lahori
                 group-hover:scale-[1.06] transform-gpu"
             />
 

@@ -214,10 +214,14 @@ export default function Disciplines() {
         </div>
       </div>
 
-      <div
-        ref={trackRef}
-        className="flex flex-col md:flex-row md:w-max will-change-transform"
-      >
+      {/*
+        No `will-change` here, deliberately. This track is five viewports wide
+        (~9600px on a 1080p screen), and promoting it to its own compositor
+        layer means holding a texture that size in GPU memory for the whole
+        page — which caused stutter rather than preventing it. GSAP's
+        force3D already promotes it only while the tween is actually running.
+      */}
+      <div ref={trackRef} className="flex flex-col md:flex-row md:w-max">
         {disciplines.map((item, i) => (
           <Panel key={item.no} item={item} index={i} />
         ))}
@@ -228,7 +232,7 @@ export default function Disciplines() {
       <div className="hidden md:block absolute bottom-0 inset-x-0 h-px bg-brand-surface/15 z-20">
         <span
           ref={progressRef}
-          className="block h-full w-full origin-left scale-x-0 bg-brand-accent will-change-transform"
+          className="block h-full w-full origin-left scale-x-0 bg-brand-accent"
         />
       </div>
     </section>
