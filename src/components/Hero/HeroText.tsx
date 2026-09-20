@@ -9,6 +9,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Phone } from "lucide-react";
 import { useNearViewport } from "@/components/layout/StackSection";
+import Embers from "@/components/fx/Embers";
 import { site, telHref, routes } from "@/lib/site";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -150,6 +151,10 @@ export default function HeroText() {
       ref={sectionRef}
       className="relative h-full w-full flex flex-col items-center justify-center overflow-hidden bg-brand-base px-4"
     >
+      {/* Embers off the charcoal. Desktop only, and it stops painting the
+          moment the hero leaves the viewport. */}
+      <Embers className="z-0" />
+
       <div
         ref={parallaxWrapperRef}
         className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center"

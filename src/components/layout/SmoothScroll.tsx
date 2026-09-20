@@ -4,6 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { scrollState, setScrollVelocity, resetScrollVelocity } from "@/lib/scrollStore";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,6 +17,9 @@ gsap.registerPlugin(ScrollTrigger);
  *     directly) so both libraries advance on the exact same frame, and turn
  *     off GSAP's lag smoothing so it never "catches up" against a scroll
  *     position Lenis is still easing toward.
+ *
+ * It also publishes scroll velocity to `scrollStore` so velocity-reactive
+ * effects can read it per frame without a React re-render.
  */
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
@@ -30,9 +34,27 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     });
     lenisRef.current = lenis;
 
-    lenis.on("scroll", ScrollTrigger.update);
+    const onScroll = (e: { velocity: number }) => {
+      ScrollTrigger.update();
+      if (!reduceMotion) setScrollVelocity(e.velocity);
+    };
 
-    const tick = (time: number) => lenis.raf(time * 1000);
+    lenis.on("scroll", onScroll);
+
+    const tick = (time: number) => {
+      lenis.raf(time * 1000);
+
+      // Lenis stops emitting `scroll` once it settles, so the last velocity
+      // would stay pinned forever and leave skewed type permanently crooked.
+      // Ease it back toward zero every frame instead.
+      if (!reduceMotion) {
+        const current = scrollState.velocity;
+        if (current !== 0) {
+          const next = current * 0.88;
+          setScrollVelocity(Math.abs(next) < 0.05 ? 0 : next);
+        }
+      }
+    };
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
@@ -42,9 +64,11 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     window.addEventListener("load", refresh);
 
     return () => {
+      lenis.off("scroll", onScroll);
       gsap.ticker.remove(tick);
       window.removeEventListener("load", refresh);
       lenis.destroy();
+      resetScrollVelocity();
       lenisRef.current = null;
     };
   }, []);

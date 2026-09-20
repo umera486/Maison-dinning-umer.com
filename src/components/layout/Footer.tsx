@@ -17,6 +17,8 @@ import {
   hoursConfirmed,
 } from "@/lib/site";
 import { socialIcons } from "@/components/shared/SocialIcons";
+import Logo from "@/components/brand/Logo";
+import { useVelocitySkew } from "@/components/fx/useVelocitySkew";
 import { EASE_LAHORI, fadeUp, inView as inViewConfig } from "@/lib/motion";
 
 /**
@@ -30,6 +32,14 @@ function Ribbon() {
   const isNear = useInView(ref, { margin: "200px 0px 200px 0px" });
   const reduceMotion = useReducedMotion() ?? false;
   const shouldRun = isNear && !reduceMotion;
+
+  // The ribbon leans and stretches with scroll speed, so it feels physically
+  // dragged by the page rather than looping independently of it.
+  const skewRef = useVelocitySkew<HTMLDivElement>({
+    skew: 3,
+    stretch: 0.06,
+    active: isNear,
+  });
 
   const phrases = [
     site.disciplines.join(" · "),
@@ -46,6 +56,7 @@ function Ribbon() {
       <div className="absolute inset-y-0 right-0 w-16 sm:w-28 bg-linear-to-l from-brand-base to-transparent z-20 pointer-events-none" />
 
       <motion.div
+        ref={skewRef}
         animate={shouldRun ? { x: ["0%", "-50%"] } : { x: "0%" }}
         transition={
           shouldRun ? { duration: 26, repeat: Infinity, ease: "linear" } : { duration: 0 }
@@ -101,7 +112,9 @@ export default function Footer() {
     <footer className="relative w-full bg-brand-base text-brand-surface">
       <Ribbon />
 
-      <div className="relative px-5 sm:px-8 lg:px-14 pt-14 sm:pt-20 pb-8 overflow-hidden">
+      {/* pb clears the fixed mobile action bar (64px + safe area), which would
+          otherwise sit on top of the legal line. */}
+      <div className="relative px-5 sm:px-8 lg:px-14 pt-14 sm:pt-20 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 overflow-hidden">
         {/* Static grid texture — a background-image, so it costs one paint and
             never re-rasterises. */}
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[linear-gradient(to_right,#F5EFEB_1px,transparent_1px),linear-gradient(to_bottom,#F5EFEB_1px,transparent_1px)] bg-[size:48px_48px]" />
@@ -117,6 +130,7 @@ export default function Footer() {
             {/* Identity + contact */}
             <div className="md:col-span-5 space-y-7">
               <div>
+                <Logo className="w-20 h-20 sm:w-24 sm:h-24 mb-5" tone="brand" withWordmark={false} />
                 <h2 className="font-heading italic text-4xl sm:text-5xl lg:text-6xl font-light leading-[0.95] tracking-tight">
                   {site.name}
                   <span className="not-italic font-normal text-brand-accent">.</span>

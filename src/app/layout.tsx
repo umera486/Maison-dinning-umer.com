@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
+import GrainOverlay from "@/components/fx/GrainOverlay";
+import CustomCursor from "@/components/fx/CustomCursor";
 import { site } from "@/lib/site";
 
 const bodoni = Bodoni_Moda({
@@ -62,6 +64,12 @@ export default function RootLayout({
           breaks the tile-stack pin. */}
       <body className="font-body antialiased">
         <SmoothScroll>{children}</SmoothScroll>
+
+        {/* Ambient layers, above the page and outside the transition curtain
+            so they never flicker on navigation. Grain is a static server
+            component; the cursor renders nothing on touch devices. */}
+        <GrainOverlay />
+        <CustomCursor />
       </body>
     </html>
   );
