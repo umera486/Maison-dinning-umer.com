@@ -4,9 +4,9 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
-import Navbar from "@/components/Hero/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
-import Footer from "@/components/sections/Footer";
+import Footer from "@/components/layout/Footer";
 
 interface Era {
   index: string;
@@ -141,7 +141,7 @@ function EraSpread({ era, priority }: { era: Era; priority: boolean }) {
               fill
               sizes="(min-width: 768px) 64vw, 100vw"
               quality={85}
-              priority={priority}
+              preload={priority}
               className="object-cover transform-gpu"
             />
           </motion.div>
@@ -209,7 +209,7 @@ export default function HeritagePage() {
             <div className="overflow-hidden mt-1 sm:mt-2">
               <motion.h1
                 variants={wordUp}
-                className="font-heading italic font-bold leading-[0.9] text-[clamp(2.8rem,7.8vw,7.2rem)] text-transparent bg-clip-text bg-gradient-to-r from-[#966A1E] via-[#C59438] to-[#8E3216]"
+                className="font-heading italic font-bold leading-[0.9] text-[clamp(2.8rem,7.8vw,7.2rem)] text-transparent bg-clip-text bg-linear-to-r from-[#966A1E] via-[#C59438] to-[#8E3216]"
               >
                 to Central London.
               </motion.h1>
@@ -251,10 +251,10 @@ export default function HeritagePage() {
             fill
             sizes="100vw"
             quality={85}
-            priority
+            preload
             className="object-cover transform-gpu"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#140805]/70 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#140805]/70 via-transparent to-transparent pointer-events-none" />
           <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-[#FAF7F2]">
             <span className="font-mono text-[10px] sm:text-xs tracking-[0.3em] uppercase text-[#E5A93C] font-semibold block mb-1">
               Live Cooking Ritual

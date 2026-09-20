@@ -12,9 +12,9 @@ import {
 } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Navbar from "@/components/Hero/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
-import Footer from "@/components/sections/Footer";
+import Footer from "@/components/layout/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -217,7 +217,7 @@ function LotPanel({ lot, index }: { lot: Lot; index: number }) {
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               quality={82}
-              priority={index === 0}
+              preload={index === 0}
               className="object-cover transform-gpu"
             />
           </motion.div>

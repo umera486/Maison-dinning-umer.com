@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 import gsap from "gsap";
-import Navbar from "@/components/Hero/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import MagneticButton from "@/components/shared/MagneticButton";
-import Footer from "@/components/sections/Footer";
+import Footer from "@/components/layout/Footer";
 
 interface Channel {
   id: string;
@@ -330,10 +330,10 @@ function ChannelPanel({
                   fill
                   sizes="(min-width: 768px) 45vw, 100vw"
                   quality={85}
-                  priority={index === 0}
+                  preload={index === 0}
                   className="object-cover transform-gpu"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#140805]/70 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-[#140805]/70 via-transparent to-transparent" />
                 <div className="absolute bottom-5 left-5 text-[#FAF7F2]">
                   <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.3em] text-[#C59438] block mb-1">
                     ACTIVE CHANNEL // {channel.ch}
@@ -382,7 +382,7 @@ export default function ContactPage() {
           <div className="overflow-hidden">
             <motion.h1
               variants={wordUp}
-              className="font-heading italic font-bold leading-[0.92] text-[clamp(2.8rem,7.5vw,6.5rem)] text-transparent bg-clip-text bg-gradient-to-r from-[#966A1E] via-[#C59438] to-[#8E3216]"
+              className="font-heading italic font-bold leading-[0.92] text-[clamp(2.8rem,7.5vw,6.5rem)] text-transparent bg-clip-text bg-linear-to-r from-[#966A1E] via-[#C59438] to-[#8E3216]"
             >
               One singular house.
             </motion.h1>

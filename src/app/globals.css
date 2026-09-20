@@ -1,18 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
+  /* ---------------------------------------------------------------
+     PALETTE
+     Dark cinematic base + gold (the hero's world), with LAHORIWALA's
+     printed brand green brought in as a secondary accent so the site
+     connects to the logo, flyer and shopfront.
+     --------------------------------------------------------------- */
   --color-brand-base: rgb(13 13 15);
+  --color-brand-raise: rgb(20 19 22);   /* cards / raised surfaces */
   --color-brand-surface: rgb(245 239 235);
   --color-brand-muted: rgb(158 152 143);
-  --color-brand-accent: rgb(229 169 60);
+  --color-brand-accent: rgb(229 169 60); /* gold */
+
+  /* Brand green, from the printed logo. `deep` is for fills, `light`
+     is the only one that clears contrast as text on the dark base. */
+  --color-brand-green: rgb(21 94 59);
+  --color-brand-green-light: rgb(88 168 120);
 
   /* Typography linked to Next.js fonts */
   --font-heading: var(--font-bodoni), serif;
   --font-body: var(--font-manrope), sans-serif;
+
+  /* ---------------------------------------------------------------
+     MOTION TOKENS
+     One easing vocabulary across the whole site. `--ease-lahori` is
+     the hero's curve — everything that reveals uses it, so the site
+     moves like one object instead of a pile of components.
+     --------------------------------------------------------------- */
+  --ease-lahori: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-seal: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --duration-quick: 300ms;
+  --duration-base: 600ms;
+  --duration-slow: 1200ms;
 }
 
-/* Global layout & utility inject */
 @layer base {
   body {
     background-color: var(--color-brand-base);
@@ -20,11 +43,20 @@
     font-family: var(--font-body);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   ::selection {
     background-color: var(--color-brand-accent);
     color: var(--color-brand-base);
+  }
+
+  /* Keyboard focus must stay visible everywhere. Several components
+     previously relied on hover alone, which strands keyboard users. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   /* Accessibility floor: users who've asked for reduced motion still get
@@ -38,6 +70,36 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@layer utilities {
+  /* Promote to its own compositor layer for the duration of a transform
+     animation. Applied deliberately — a blanket `will-change` costs
+     memory on mobile and can *reduce* frame rate, which is the opposite
+     of what it's for. Pair with .gpu-release once the animation settles. */
+  .gpu-layer {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  .gpu-release {
+    will-change: auto;
+  }
+
+  /* Headline text sitting over photography. Without this, cream-on-image
+     headings lose legibility wherever the photo goes pale — the single
+     most common readability failure on restaurant sites. */
+  .text-over-image {
+    text-shadow: 0 1px 24px rgb(13 13 15 / 0.55), 0 1px 3px rgb(13 13 15 / 0.4);
+  }
+
+  /* Masks a line of text so it can slide up from nothing. The child does
+     the transform; this only clips. */
+  .reveal-mask {
+    overflow: hidden;
+    display: block;
   }
 }
 
