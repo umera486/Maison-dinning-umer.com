@@ -198,7 +198,7 @@ function ChapterBlock({ chapter, index }: { chapter: Chapter; index: number }) {
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={inView} className="mt-8">
               <Link
                 href={chapter.href}
-                className="group inline-flex items-center gap-2.5 rounded-full border border-brand-surface/25
+                className="group inline-flex items-center gap-2.5 rounded-full border border-brand-surface/30
                   px-6 h-12 font-body text-[10px] uppercase tracking-[0.2em] text-brand-surface
                   hover:border-brand-accent hover:text-brand-accent transition-colors duration-300"
               >
@@ -333,7 +333,7 @@ export default function HeritageView() {
             <a
               href={telHref}
               className="inline-flex items-center justify-center gap-2.5 h-14 px-8 rounded-full
-                border border-brand-surface/25 font-body text-[11px] uppercase tracking-[0.2em]
+                border border-brand-surface/30 font-body text-[11px] uppercase tracking-[0.2em]
                 text-brand-surface hover:border-brand-accent hover:text-brand-accent
                 transition-colors duration-300"
             >

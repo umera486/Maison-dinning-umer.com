@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function CateringPage() {
   return (
     <>
-      <Navbar />
+      <Navbar onDarkHero />
       <main className="relative bg-brand-base text-brand-surface">
         <CateringView />
       </main>

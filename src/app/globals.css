@@ -108,6 +108,25 @@
   --vignette-alpha: 0.1;
 }
 
+/* ---------------------------------------------------------------
+   OVER-DARK SUBTREES
+
+   Some pages open with a full-bleed photograph behind the fixed header.
+   Those images keep an always-dark scrim in both themes, so in light
+   mode the header would be painting its normal dark text straight onto
+   a dark picture — invisible.
+
+   Rather than thread a prop through every child (wordmark, links, seal,
+   phone button, theme toggle), this re-points the two colour tokens for
+   that subtree only. Anything inside using `text-brand-surface` or
+   `text-brand-accent` becomes the pinned cream/gold automatically, and
+   reverts the moment the attribute is removed on scroll.
+   --------------------------------------------------------------- */
+[data-over-dark="true"] {
+  --color-brand-surface: var(--color-on-image);
+  --color-brand-accent: var(--color-accent-on-image);
+}
+
 @layer base {
   body {
     background-color: var(--color-brand-base);

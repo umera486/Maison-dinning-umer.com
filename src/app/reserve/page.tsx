@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default function ReservePage() {
   return (
     <>
-      <Navbar />
+      <Navbar onDarkHero />
 
       <main className="relative bg-brand-base text-brand-surface">
         {/* ---------- Hero band ---------- */}

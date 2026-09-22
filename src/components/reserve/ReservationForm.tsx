@@ -66,14 +66,14 @@ function StepRail({ step }: { step: Step }) {
                     ? "border-brand-accent bg-brand-accent text-brand-base font-bold"
                     : done
                       ? "border-brand-green-light/60 text-brand-green-light"
-                      : "border-brand-surface/25 text-brand-surface/40"
+                      : "border-brand-surface/35 text-brand-surface/55"
                 }`}
               >
                 {done ? <Check className="w-3 h-3" strokeWidth={3} /> : i + 1}
               </span>
               <span
                 className={`font-body text-[10px] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                  active ? "text-brand-accent" : done ? "text-brand-surface/55" : "text-brand-surface/30"
+                  active ? "text-brand-accent" : done ? "text-brand-surface/70" : "text-brand-surface/50"
                 }`}
               >
                 {label}
@@ -106,7 +106,7 @@ function Chip({
       className={`shrink-0 rounded-xl border font-body transition-colors duration-200 cursor-pointer ${
         selected
           ? "border-brand-accent bg-brand-accent text-brand-base font-semibold"
-          : "border-brand-surface/18 bg-brand-surface/[0.03] text-brand-surface hover:border-brand-surface/45"
+          : "border-brand-surface/30 bg-brand-surface/[0.03] text-brand-surface hover:border-brand-surface/45"
       } ${className}`}
     >
       {children}
@@ -176,8 +176,8 @@ export default function ReservationForm() {
   const summary = `${form.guests} ${form.guests === 1 ? "guest" : "guests"} · ${formatDateLong(form.date)} · ${form.time}`;
 
   const inputClass =
-    "w-full h-14 px-4 rounded-xl bg-brand-surface/[0.04] border border-brand-surface/18 " +
-    "font-body text-base text-brand-surface placeholder:text-brand-surface/30 " +
+    "w-full h-14 px-4 rounded-xl bg-brand-surface/[0.04] border border-brand-surface/30 " +
+    "font-body text-base text-brand-surface placeholder:text-brand-surface/60 " +
     "focus:border-brand-accent focus:bg-brand-surface/[0.07] focus:outline-none transition-colors";
 
   return (
@@ -241,7 +241,7 @@ export default function ReservationForm() {
                     value={form.date}
                     min={minDate}
                     onChange={(e) => set("date", e.target.value)}
-                    className={`${inputClass} [color-scheme:dark]`}
+                    className={inputClass}
                   />
                 </label>
               </fieldset>
@@ -307,8 +307,8 @@ export default function ReservationForm() {
                 </label>
                 <textarea id="res-notes" rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)}
                   placeholder="Allergies, a birthday, a high chair…"
-                  className="w-full px-4 py-3.5 rounded-xl bg-brand-surface/[0.04] border border-brand-surface/18
-                    font-body text-base text-brand-surface placeholder:text-brand-surface/30
+                  className="w-full px-4 py-3.5 rounded-xl bg-brand-surface/[0.04] border border-brand-surface/30
+                    font-body text-base text-brand-surface placeholder:text-brand-surface/60
                     focus:border-brand-accent focus:outline-none transition-colors resize-none" />
               </div>
 
@@ -317,7 +317,7 @@ export default function ReservationForm() {
               <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
                 <button type="button" onClick={() => setStep(0)}
                   className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-full
-                    border border-brand-surface/25 font-body text-[11px] uppercase tracking-[0.2em]
+                    border border-brand-surface/30 font-body text-[11px] uppercase tracking-[0.2em]
                     text-brand-surface hover:border-brand-accent hover:text-brand-accent
                     transition-colors duration-300 cursor-pointer">
                   <ChevronLeft className="w-4 h-4" strokeWidth={2} />

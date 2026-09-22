@@ -272,7 +272,7 @@ export default function CateringView() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 h-14 px-8 rounded-full
-                  border border-brand-surface/25 font-body text-[11px] uppercase tracking-[0.2em]
+                  border border-brand-surface/30 font-body text-[11px] uppercase tracking-[0.2em]
                   text-brand-surface hover:border-brand-accent hover:text-brand-accent
                   transition-colors duration-300"
               >

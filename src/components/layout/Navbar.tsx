@@ -174,7 +174,14 @@ function JaliBackdrop() {
   );
 }
 
-export default function Navbar() {
+/**
+ * `onDarkHero` — set on pages whose first screen is a full-bleed photograph
+ * (/reserve, /catering, /heritage). Those images keep an always-dark scrim in
+ * both themes, so before the header gains its solid background it must paint
+ * cream text, not the light theme's dark text. See `[data-over-dark]` in
+ * globals.css, which re-points the tokens for this subtree.
+ */
+export default function Navbar({ onDarkHero = false }: { onDarkHero?: boolean }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [origin, setOrigin] = useState({ x: 0, y: 0, radius: 0 });
@@ -272,10 +279,15 @@ export default function Navbar() {
         initial={false}
         animate={{ y: visible ? 0 : "-130%" }}
         transition={{ duration: 0.4, ease: EASE_SEAL }}
+        // Once scrolled the header owns its background, so normal theme
+        // colours apply again and the attribute comes off.
+        data-over-dark={onDarkHero && !isScrolled ? "true" : undefined}
         className={`fixed top-0 inset-x-0 z-100 transform-gpu transition-colors duration-500 ${
           isScrolled
             ? "bg-brand-base/95 border-b border-brand-accent/15 shadow-[0_8px_30px_rgb(0_0_0/0.4)]"
-            : "bg-linear-to-b from-brand-base/85 to-transparent"
+            : onDarkHero
+              ? "bg-linear-to-b from-scrim/80 to-transparent"
+              : "bg-linear-to-b from-brand-base/85 to-transparent"
         }`}
       >
         <div className="flex items-center justify-between gap-2 sm:gap-4 px-3.5 sm:px-6 lg:px-10 h-16 lg:h-20">
@@ -310,7 +322,7 @@ export default function Navbar() {
             <Link
               href={routes.reserve}
               className="hidden md:inline-flex items-center justify-center h-10 px-5 rounded-full
-                border border-brand-surface/25 font-body text-[10px] uppercase tracking-[0.18em]
+                border border-brand-surface/30 font-body text-[10px] uppercase tracking-[0.18em]
                 text-brand-surface hover:border-brand-accent hover:text-brand-accent
                 transition-colors duration-300 whitespace-nowrap"
             >
