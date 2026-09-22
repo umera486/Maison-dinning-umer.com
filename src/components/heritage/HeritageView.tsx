@@ -257,14 +257,14 @@ export default function HeritageView() {
             className="object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-linear-to-t from-brand-base via-brand-base/60 to-brand-base/45" />
+        <div className="absolute inset-0 bg-linear-to-t from-scrim via-scrim/60 to-scrim/45" />
 
         <div className="absolute inset-0 flex flex-col justify-end px-5 sm:px-8 lg:px-14 pb-12 sm:pb-16">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE_LAHORI }}
-            className="font-body text-[10px] uppercase tracking-[0.34em] text-brand-accent mb-5"
+            className="font-body text-[10px] uppercase tracking-[0.34em] text-accent-on-image mb-5"
           >
             Our story · {site.strapline}
           </motion.p>
@@ -274,7 +274,7 @@ export default function HeritageView() {
             initial="hidden"
             animate="visible"
             className="font-heading italic font-light text-[clamp(2.75rem,12vw,7rem)] leading-[0.94]
-              tracking-tight text-brand-surface text-over-image text-balance max-w-[13ch]"
+              tracking-tight text-on-image text-over-image text-balance max-w-[13ch]"
           >
             <SplitWords text={HEADLINE} />
           </motion.h1>

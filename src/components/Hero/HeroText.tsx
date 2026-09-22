@@ -186,12 +186,12 @@ export default function HeroText() {
                   preload={isCentre}
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-brand-base/50 group-hover:bg-transparent transition-colors duration-700 z-10" />
+                <div className="absolute inset-0 bg-scrim/50 group-hover:bg-transparent transition-colors duration-700 z-10" />
 
                 {/* Names the dish the image is selling. Without this the
                     petals are decoration; with it they're the menu. */}
                 <span className="absolute bottom-2.5 left-0 right-0 z-20 px-2 text-center font-body
-                  text-[8px] md:text-[9px] uppercase tracking-[0.16em] text-brand-surface/85
+                  text-[8px] md:text-[9px] uppercase tracking-[0.16em] text-on-image/85
                   opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {petal.label}
                 </span>

@@ -14,6 +14,7 @@ import {
 } from "framer-motion";
 import { Phone, MapPin, ShieldCheck, UtensilsCrossed, CalendarCheck } from "lucide-react";
 import Logo from "@/components/brand/Logo";
+import ThemeToggle from "@/components/fx/ThemeToggle";
 import { navLinks, site, socials, routes, telHref, mapsHref, isPlaceholder } from "@/lib/site";
 import { socialIcons } from "@/components/shared/SocialIcons";
 import { EASE_LAHORI, EASE_SEAL } from "@/lib/motion";
@@ -332,6 +333,8 @@ export default function Navbar() {
                 {site.phone.display}
               </span>
             </a>
+
+            <ThemeToggle />
 
             <SealButton
               open={menuOpen}

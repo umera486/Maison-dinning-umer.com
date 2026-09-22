@@ -102,36 +102,39 @@ function Panel({ item, index }: { item: Discipline; index: number }) {
         className="object-cover"
       />
 
-      {/* Two scrims: one lifts the whole frame off white, one anchors the
-          type. Fixed gradients, so no per-frame paint. */}
-      <div className="absolute inset-0 bg-brand-base/45" />
-      <div className="absolute inset-0 bg-linear-to-t from-brand-base via-brand-base/25 to-transparent" />
+      {/* Always-dark scrims, in both themes. These panels carry their type
+          directly on the photograph, so a theme-aware (cream) scrim would
+          leave the heading floating on a pale image with no contrast. Light
+          mode keeps these as deliberate dark islands. */}
+      <div className="absolute inset-0 bg-scrim/45" />
+      <div className="absolute inset-0 bg-linear-to-t from-scrim via-scrim/25 to-transparent" />
 
       <div className="relative h-full flex flex-col justify-end px-5 sm:px-10 lg:px-16 pb-14 sm:pb-20">
-        <span className="font-body text-[11px] tracking-[0.4em] text-brand-accent mb-4 tabular-nums">
+        <span className="font-body text-[11px] tracking-[0.4em] text-accent-on-image mb-4 tabular-nums">
           {item.no} — {item.meta.toUpperCase()}
         </span>
 
         {/* The whole point of the section. Display scale, nothing else
-            competing with it. */}
-        <h3 className="font-heading italic font-light text-brand-surface text-over-image
+            competing with it. `on-image` rather than `brand-surface` so it
+            stays cream when the rest of the site goes light. */}
+        <h3 className="font-heading italic font-light text-on-image text-over-image
           text-[clamp(3.5rem,13vw,11rem)] leading-[0.86] tracking-[-0.02em] mb-6">
           {item.name}
         </h3>
 
-        <p className="font-body text-sm sm:text-base leading-relaxed text-brand-surface/75 max-w-[44ch] mb-7">
+        <p className="font-body text-sm sm:text-base leading-relaxed text-on-image/75 max-w-[44ch] mb-7">
           {item.line}
         </p>
 
         <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
-          <span className="font-heading italic text-2xl sm:text-3xl text-brand-accent">
+          <span className="font-heading italic text-2xl sm:text-3xl text-accent-on-image">
             {item.example}
           </span>
           <Link
             href={item.href}
             className="group inline-flex items-center gap-2.5 font-body text-[11px] uppercase tracking-[0.22em]
-              text-brand-surface border-b border-brand-surface/30 pb-1.5
-              hover:text-brand-accent hover:border-brand-accent transition-colors duration-300"
+              text-on-image border-b border-on-image/30 pb-1.5
+              hover:text-accent-on-image hover:border-accent-on-image transition-colors duration-300"
           >
             See it on the menu
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" strokeWidth={1.8} />
@@ -205,10 +208,10 @@ export default function Disciplines() {
       {/* Section label sits above the pin, so it stays put while panels move. */}
       <div className="absolute top-0 inset-x-0 z-20 px-5 sm:px-10 lg:px-16 pt-24 sm:pt-28 pointer-events-none">
         <div className="flex items-baseline justify-between gap-6">
-          <p className="font-body text-[10px] uppercase tracking-[0.4em] text-brand-surface/55">
+          <p className="font-body text-[10px] uppercase tracking-[0.4em] text-on-image/60">
             What we cook
           </p>
-          <p className="hidden md:block font-body text-[10px] uppercase tracking-[0.3em] text-brand-surface/35">
+          <p className="hidden md:block font-body text-[10px] uppercase tracking-[0.3em] text-on-image/40">
             Scroll →
           </p>
         </div>
@@ -229,10 +232,10 @@ export default function Disciplines() {
 
       {/* Horizontal progress, desktop only — the one piece of chrome that
           tells you how far the pinned run goes. */}
-      <div className="hidden md:block absolute bottom-0 inset-x-0 h-px bg-brand-surface/15 z-20">
+      <div className="hidden md:block absolute bottom-0 inset-x-0 h-px bg-on-image/15 z-20">
         <span
           ref={progressRef}
-          className="block h-full w-full origin-left scale-x-0 bg-brand-accent"
+          className="block h-full w-full origin-left scale-x-0 bg-accent-on-image"
         />
       </div>
     </section>

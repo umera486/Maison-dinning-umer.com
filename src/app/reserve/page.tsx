@@ -35,14 +35,14 @@ export default function ReservePage() {
             preload
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-brand-base via-brand-base/70 to-brand-base/45" />
+          <div className="absolute inset-0 bg-linear-to-t from-scrim via-scrim/70 to-scrim/45" />
 
           <div className="absolute inset-0 flex flex-col justify-end px-5 sm:px-8 lg:px-14 pb-8 sm:pb-12">
             <div className="max-w-[1100px] mx-auto w-full">
-              <p className="font-body text-[10px] uppercase tracking-[0.34em] text-brand-accent mb-4">
+              <p className="font-body text-[10px] uppercase tracking-[0.34em] text-accent-on-image mb-4">
                 {site.branch} · Dine in
               </p>
-              <h1 className="font-heading italic font-light text-[clamp(2.5rem,11vw,6rem)] leading-[0.94] tracking-tight text-brand-surface text-over-image text-balance max-w-[11ch]">
+              <h1 className="font-heading italic font-light text-[clamp(2.5rem,11vw,6rem)] leading-[0.94] tracking-tight text-on-image text-over-image text-balance max-w-[11ch]">
                 Book a table.
               </h1>
             </div>

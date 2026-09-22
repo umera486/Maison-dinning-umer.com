@@ -89,15 +89,15 @@ export default function StoryTeaser() {
             className="object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-brand-base/35" />
+        <div className="absolute inset-0 bg-scrim/35" />
         <div className="absolute inset-0 bg-linear-to-t from-brand-base via-transparent to-transparent" />
 
         <div className="absolute top-0 inset-x-0 px-5 sm:px-10 lg:px-16 pt-10 sm:pt-14">
-          <div className="max-w-[1600px] mx-auto flex items-baseline justify-between gap-6 border-b border-brand-surface/20 pb-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand-surface/70">
+          <div className="max-w-[1600px] mx-auto flex items-baseline justify-between gap-6 border-b border-on-image/25 pb-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-on-image/75">
               Our story
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand-surface/45">
+            <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-on-image/50">
               Est. {site.branch}
             </span>
           </div>
@@ -112,7 +112,7 @@ export default function StoryTeaser() {
             initial="hidden"
             whileInView="visible"
             viewport={inView}
-            className="font-heading italic font-light text-brand-surface text-over-image
+            className="font-heading italic font-light text-brand-surface
               text-[clamp(2.25rem,9vw,7rem)] leading-[0.92] tracking-[-0.03em] text-balance max-w-[13ch]"
           >
             <SplitWords text={HEADLINE} />

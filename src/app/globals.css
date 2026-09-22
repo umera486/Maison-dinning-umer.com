@@ -2,21 +2,54 @@
 
 @theme {
   /* ---------------------------------------------------------------
-     PALETTE
-     Dark cinematic base + gold (the hero's world), with LAHORIWALA's
-     printed brand green brought in as a secondary accent so the site
-     connects to the logo, flyer and shopfront.
-     --------------------------------------------------------------- */
-  --color-brand-base: rgb(13 13 15);
-  --color-brand-raise: rgb(20 19 22);   /* cards / raised surfaces */
-  --color-brand-surface: rgb(245 239 235);
-  --color-brand-muted: rgb(158 152 143);
-  --color-brand-accent: rgb(229 169 60); /* gold */
+     PALETTE — dark is the default theme.
 
-  /* Brand green, from the printed logo. `deep` is for fills, `light`
-     is the only one that clears contrast as text on the dark base. */
-  --color-brand-green: rgb(21 94 59);
-  --color-brand-green-light: rgb(88 168 120);
+     Dark is the brand's own world (the hero, the flyer's night-time
+     feel), so it ships as the baseline and light mode overrides the
+     same variables below. Every utility compiles to
+     `var(--color-brand-*)`, so redefining these re-themes the entire
+     site without a single `dark:` variant in the markup.
+
+     Measured contrast against the dark base (WCAG 2.1):
+       surface #F5EFEB  17.04:1  AAA
+       muted   #9E988F   6.79:1  AA
+       accent  #E5A93C   9.31:1  AAA
+       green-l #58A878   6.74:1  AA
+     --------------------------------------------------------------- */
+  --color-brand-base: #0d0d0f;
+  --color-brand-raise: #141316;   /* cards / raised surfaces */
+  --color-brand-surface: #f5efeb;
+  --color-brand-muted: #9e988f;
+  --color-brand-accent: #e5a93c;  /* gold */
+
+  /* Brand green, from the printed logo. `green` is for fills,
+     `green-light` is the variant that clears contrast as text. */
+  --color-brand-green: #155e3b;
+  --color-brand-green-light: #58a878;
+
+  /* Chilli / warning. Used for the "spicy" dish tag and form errors, which
+     were raw `orange-300` — fine on the dark base, ~2:1 on cream. */
+  --color-brand-hot: #f0925a;
+
+  /* ---------------------------------------------------------------
+     THEME-INVARIANT TOKENS
+
+     Photography needs a dark scrim in BOTH themes. A cream scrim over
+     a photo in light mode washes it out and leaves overlaid text
+     floating on a pale image with no contrast at all. So full-bleed
+     image sections stay dark islands in light mode — a deliberate
+     editorial choice, and the only way overlaid type stays legible
+     without knowing what the photograph looks like.
+
+     Use `scrim` for gradients over images and `on-image` for text
+     sitting on them. Never `brand-base` / `brand-surface` for those.
+     --------------------------------------------------------------- */
+  --color-scrim: #08080a;
+  --color-on-image: #f5efeb;
+  /* The bright gold, pinned. `brand-accent` darkens to a deep ochre in light
+     mode, which measures ~2:1 on a dark scrim — invisible. Anything sitting
+     on a photograph must use this instead. */
+  --color-accent-on-image: #e5a93c;
 
   /* Typography linked to Next.js fonts */
   --font-heading: var(--font-bodoni), serif;
@@ -36,6 +69,45 @@
   --duration-slow: 1200ms;
 }
 
+/* Tells the browser to render native UI (scrollbars, form controls,
+   date pickers) to match. Without this the reservation form's native
+   date picker stays dark on a light page. */
+:root {
+  color-scheme: dark;
+  /* Vignette strength, overridden per theme — see GrainOverlay. */
+  --vignette: 0 0 0;
+  --vignette-alpha: 0.5;
+}
+
+/* ---------------------------------------------------------------
+   LIGHT THEME
+
+   Not an inversion. The gold is the reason: #E5A93C on cream measures
+   1.86:1, which is unreadable, so light mode gets its own deeper
+   ochre. Measured against the light base:
+     surface #17130F  16.73:1  AAA
+     muted   #5A534A   6.86:1  AA
+     accent  #7A4E06   6.51:1  AA
+     green-l #14653A   6.44:1  AA
+   --------------------------------------------------------------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-brand-base: #f7f3ee;    /* warm paper, not pure white */
+  --color-brand-raise: #efe9e1;
+  --color-brand-surface: #17130f;
+  --color-brand-muted: #5a534a;
+  --color-brand-accent: #7a4e06;  /* deep ochre — the readable gold */
+
+  --color-brand-green: #14532d;
+  --color-brand-green-light: #14653a;
+  --color-brand-hot: #9a3412;
+
+  /* Lighten the vignette so it reads as a soft edge rather than dirt. */
+  --vignette: 23 19 15;
+  --vignette-alpha: 0.1;
+}
+
 @layer base {
   body {
     background-color: var(--color-brand-base);
@@ -44,6 +116,9 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Crossfade on theme change. Colour transitions are cheap; this is
+       deliberately short so it never feels like lag. */
+    transition: background-color 400ms ease, color 400ms ease;
   }
 
   ::selection {
@@ -51,8 +126,7 @@
     color: var(--color-brand-base);
   }
 
-  /* Keyboard focus must stay visible everywhere. Several components
-     previously relied on hover alone, which strands keyboard users. */
+  /* Keyboard focus must stay visible in both themes. */
   :focus-visible {
     outline: 2px solid var(--color-brand-accent);
     outline-offset: 3px;
@@ -77,7 +151,7 @@
   /* Promote to its own compositor layer for the duration of a transform
      animation. Applied deliberately — a blanket `will-change` costs
      memory on mobile and can *reduce* frame rate, which is the opposite
-     of what it's for. Pair with .gpu-release once the animation settles. */
+     of what it's for. */
   .gpu-layer {
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -88,11 +162,11 @@
     will-change: auto;
   }
 
-  /* Headline text sitting over photography. Without this, cream-on-image
-     headings lose legibility wherever the photo goes pale — the single
-     most common readability failure on restaurant sites. */
+  /* Headline text sitting over photography. Always a dark shadow, in
+     both themes, because text over images is always the cream
+     `on-image` colour over the dark `scrim`. */
   .text-over-image {
-    text-shadow: 0 1px 24px rgb(13 13 15 / 0.55), 0 1px 3px rgb(13 13 15 / 0.4);
+    text-shadow: 0 1px 24px rgb(8 8 10 / 0.6), 0 1px 3px rgb(8 8 10 / 0.45);
   }
 
   /* Masks a line of text so it can slide up from nothing. The child does

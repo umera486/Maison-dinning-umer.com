@@ -312,7 +312,7 @@ export default function ReservationForm() {
                     focus:border-brand-accent focus:outline-none transition-colors resize-none" />
               </div>
 
-              {error && <p role="alert" className="font-body text-sm text-orange-300">{error}</p>}
+              {error && <p role="alert" className="font-body text-sm text-brand-hot">{error}</p>}
 
               <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
                 <button type="button" onClick={() => setStep(0)}

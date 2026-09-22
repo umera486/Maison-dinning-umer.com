@@ -28,7 +28,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const TAG_META: Record<DishTag, { label: string; icon: typeof Flame; tone: string }> = {
   veg: { label: "Vegetarian", icon: Leaf, tone: "text-brand-green-light border-brand-green-light/30" },
-  spicy: { label: "Spicy", icon: Flame, tone: "text-orange-300 border-orange-300/30" },
+  spicy: { label: "Spicy", icon: Flame, tone: "text-brand-hot border-brand-hot/35" },
   sharing: { label: "To share", icon: Users, tone: "text-brand-surface/70 border-brand-surface/20" },
   breakfast: { label: "Nashta", icon: Sunrise, tone: "text-brand-surface/70 border-brand-surface/20" },
   signature: { label: "Signature", icon: Star, tone: "text-brand-accent border-brand-accent/35" },
@@ -225,22 +225,22 @@ function CategorySection({
 
         {/* Scrim. Fixed gradient, not an animated filter — keeps the heading
             legible over any photograph without costing a frame. */}
-        <div className="absolute inset-0 bg-linear-to-t from-brand-base via-brand-base/55 to-brand-base/20" />
+        <div className="absolute inset-0 bg-linear-to-t from-scrim via-scrim/55 to-scrim/20" />
 
         <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-7">
           <div className="flex items-center gap-3 mb-2">
-            <span className="font-body text-[10px] font-semibold tracking-[0.28em] text-brand-accent">
+            <span className="font-body text-[10px] font-semibold tracking-[0.28em] text-accent-on-image">
               {category.number}
             </span>
-            <span className="h-px w-8 bg-brand-accent/45" />
-            <span className="font-body text-[10px] uppercase tracking-[0.2em] text-brand-surface/60">
+            <span className="h-px w-8 bg-accent-on-image/45" />
+            <span className="font-body text-[10px] uppercase tracking-[0.2em] text-on-image/60">
               {category.items.length} {category.items.length === 1 ? "dish" : "dishes"}
             </span>
           </div>
 
           <h2
             id={`${category.id}-heading`}
-            className="font-heading italic font-light text-[clamp(1.85rem,6.5vw,3.25rem)] leading-[1.05] text-brand-surface text-over-image text-balance"
+            className="font-heading italic font-light text-[clamp(1.85rem,6.5vw,3.25rem)] leading-[1.05] text-on-image text-over-image text-balance"
           >
             {category.name}
           </h2>

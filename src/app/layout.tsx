@@ -5,6 +5,7 @@ import SmoothScroll from "@/components/layout/SmoothScroll";
 import GrainOverlay from "@/components/fx/GrainOverlay";
 import CustomCursor from "@/components/fx/CustomCursor";
 import { site } from "@/lib/site";
+import { THEME_INIT_SCRIPT, DEFAULT_THEME } from "@/lib/theme";
 
 const bodoni = Bodoni_Moda({
   subsets: ["latin"],
@@ -56,12 +57,24 @@ export default function RootLayout({
     <html
       lang="en-GB"
       data-scroll-behavior="smooth"
+      // Server-rendered default. The inline script below corrects it before
+      // first paint if the visitor has chosen the other theme, and
+      // suppressHydrationWarning stops React complaining that the attribute
+      // it finds on the client differs from the one it rendered.
+      data-theme={DEFAULT_THEME}
+      suppressHydrationWarning
       className={`${bodoni.variable} ${manrope.variable}`}
     >
       {/* overflow-x-hidden lives on body only (see globals.css) — putting it
           on any ancestor of a `position: sticky` element turns that ancestor
           into the sticky containing block in some engines, which silently
           breaks the tile-stack pin. */}
+      <head>
+        {/* Blocking, before first paint: applies the stored theme so there is
+            no flash of the wrong colours on load. Must stay inline — a
+            bundled module would arrive too late to prevent the flash. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="font-body antialiased">
         <SmoothScroll>{children}</SmoothScroll>
 

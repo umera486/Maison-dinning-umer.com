@@ -27,7 +27,10 @@ export default function SmartImage({
       <div
         role="img"
         aria-label={alt}
-        className={`absolute inset-0 flex items-end bg-linear-to-br from-brand-raise via-brand-base to-black ${className}`}
+        // Uses the always-dark scrim rather than `to-black`, so the fallback
+        // is consistent in both themes and any text placed over it (which is
+        // `on-image` cream everywhere) stays legible.
+        className={`absolute inset-0 flex items-end bg-linear-to-br from-brand-raise via-scrim to-scrim ${className}`}
       >
         <div
           aria-hidden
@@ -38,7 +41,7 @@ export default function SmartImage({
           }}
         />
         {label && (
-          <span className="relative p-5 font-heading italic text-brand-surface/45 text-xl leading-tight">
+          <span className="relative p-5 font-heading italic text-on-image/45 text-xl leading-tight">
             {label}
           </span>
         )}

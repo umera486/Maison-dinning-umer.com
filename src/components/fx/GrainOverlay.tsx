@@ -29,12 +29,16 @@ export default function GrainOverlay() {
       style={{ contain: "strict" }}
     >
       {/* Vignette — pulls the eye inward and softens the edges of full-bleed
-          photography. One gradient, painted once. */}
+          photography. One gradient, painted once.
+
+          Driven by `--vignette` / `--vignette-alpha` so it follows the theme:
+          a heavy black vignette over a cream page reads as grime rather than
+          atmosphere, so light mode uses a much softer, warmer edge. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 125% 85% at 50% 50%, transparent 42%, rgba(8,8,10,0.5) 100%)",
+            "radial-gradient(ellipse 125% 85% at 50% 50%, transparent 42%, rgb(var(--vignette) / var(--vignette-alpha)) 100%)",
         }}
       />
 
